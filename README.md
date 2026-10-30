@@ -83,3 +83,14 @@ Filters apply immediately to loaded points without another network request;
 GPS remains visible independently. Items matching multiple categories stay
 visible when any matching category is selected. Data coverage depends on
 Wikidata classification, administrative-location and coordinate statements.
+
+### Location detail view
+
+Click a map marker to open its full-page detail view. Close it with the return
+button or Escape; the map position and filters are preserved. All available
+P18 photos are returned by the query and displayed in a horizontally scrolling
+carousel with arrow buttons and keyboard navigation. A source link opens the
+Commons file page for attribution. Locations without photos show an empty state.
+Category cards use photos from the loaded Wikidata results and toggle filters.
+
+Run all checks with `node --test src/lib/*.test.js` and `npm run build`.

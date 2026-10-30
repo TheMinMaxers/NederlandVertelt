@@ -7,7 +7,7 @@ PREFIX bd: <http://www.bigdata.com/rdf#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT ?item ?itemLabel ?coord ?town ?townLabel
-       (SAMPLE(?itemImage) AS ?image)
+       (GROUP_CONCAT(DISTINCT STR(?itemImage); separator="|") AS ?images)
        (GROUP_CONCAT(DISTINCT ?category; separator=",") AS ?categories)
        (GROUP_CONCAT(DISTINCT ?aliasNl; separator=" · ") AS ?aliasesNl) WHERE {
   {
