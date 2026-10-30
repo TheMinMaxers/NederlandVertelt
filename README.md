@@ -125,3 +125,11 @@ Descriptions prefer non-empty RCE `omschrijving` text. If no RCE description is
 returned, or the RCE request fails, the detail view displays Wikidata's Dutch
 `schema:description`, falling back to English. The displayed source follows the
 selected description. If neither source has text, an empty-state message appears.
+
+### Map-first interface
+
+The map fills the viewport below a compact grey title bar. Filters open in an
+80vw × 80dvh dialog with category photo cards and the GPS control. Clicking a
+marker opens an introduction bubble; **Lees hier meer over mij!** opens the full
+location page. The construction year comes from Wikidata P571 (inception), not
+RCE's monument registration date. Missing construction dates are shown as unknown.

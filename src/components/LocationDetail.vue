@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { constructionYear } from '../lib/mapPopup'
 import { imageSource, imageUrls, safeUrl, thumbnail } from '../lib/images'
 import { fetchHeritage, formatRegistrationDate, monumentNumbers, preferredDescription } from '../lib/heritage'
 const props = defineProps({ row: { type: Object, required: true }, categories: { type: Array, required: true } })
@@ -56,6 +57,7 @@ onBeforeUnmount(() => heritageController.abort())
         <p class="eyebrow">ZEELAND · EEN PLEK OM TE ONTDEKKEN</p>
         <div class="detail-tags"><span v-for="category in labels" :key="category.id" class="tag">{{ category.label }}</span></div>
         <h1 id="detail-title"><a v-if="safeUrl(row.item?.value)" :href="safeUrl(row.item.value)" target="_blank" rel="noopener noreferrer">{{ name }} <span class="external-arrow">↗</span></a><template v-else>{{ name }}</template></h1>
+        <p v-if="constructionYear(row.inception?.value)" class="detail-town">Gebouwd in {{ constructionYear(row.inception.value) }} · Bron: Wikidata</p>
         <p v-if="row.aliasesNl?.value" class="detail-aliases">Ook bekend als: {{ row.aliasesNl.value }}</p>
         <p v-if="row.townLabel?.value || row.town?.value" class="detail-town">Stad: <a v-if="safeUrl(row.town?.value)" :href="safeUrl(row.town.value)" target="_blank" rel="noopener noreferrer">{{ row.townLabel?.value || row.town.value }} ↗</a><span v-else>{{ row.townLabel.value }}</span></p>
       </div>
