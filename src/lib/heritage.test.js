@@ -22,6 +22,15 @@ test('leaves non-monuments unenriched without a request', async () => {
   assert.deepEqual(await fetchHeritage({}), [])
 })
 
+test('excludes matching registrations with missing or blank descriptions', () => {
+  const row = { rijksmonumentnummer: literal('12660') }
+  const records = [undefined, '', ' \n\t ', 'Een monument.'].map(description => ({
+    rijksmonumentnummer: literal('12660'),
+    ...(description === undefined ? {} : { omschrijving: literal(description) }),
+  }))
+  assert.deepEqual(joinHeritage(row, records), [records[3]])
+})
+
 test('formats registration dates as Dutch dates', () => {
   assert.equal(formatRegistrationDate('1968-07-02'), '2 juli 1968')
   assert.equal(formatRegistrationDate('1968-07-02T00:00:00Z'), '2 juli 1968')
@@ -39,4 +48,13 @@ test('fetches and joins the verified Nisse response while ignoring other identif
     assert.deepEqual(await fetchHeritage(row), [record])
     assert.equal(formatRegistrationDate(record.datumInschrijving.value), '11 februari 1998')
   } finally { t.mock.restoreAll() }
+})
+
+test('prefers RCE descriptions and falls back to Wikidata for absent or blank RCE text', async () => {
+  const { preferredDescription } = await import('./heritage.js')
+  const row = { itemDescription: literal('Wikidata-omschrijving') }
+  assert.deepEqual(preferredDescription(row, [{ omschrijving: literal('RCE-omschrijving') }]), { text: 'RCE-omschrijving', source: 'RCE' })
+  assert.deepEqual(preferredDescription(row, [{ omschrijving: literal(' \n ') }]), { text: 'Wikidata-omschrijving', source: 'Wikidata' })
+  assert.deepEqual(preferredDescription(row), { text: 'Wikidata-omschrijving', source: 'Wikidata' })
+  assert.equal(preferredDescription({}), null)
 })

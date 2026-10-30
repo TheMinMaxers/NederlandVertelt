@@ -5,8 +5,10 @@ PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX schema: <http://schema.org/>
 
 SELECT ?item ?itemLabel ?coord ?town ?townLabel
+       (COALESCE(SAMPLE(?descriptionNl), SAMPLE(?descriptionEn)) AS ?itemDescription)
        (GROUP_CONCAT(DISTINCT STR(?itemImage); separator="|") AS ?images)
        (GROUP_CONCAT(DISTINCT STR(?monumentNumber); separator="|") AS ?rijksmonumentnummer)
        (GROUP_CONCAT(DISTINCT ?category; separator=",") AS ?categories)
@@ -26,6 +28,8 @@ SELECT ?item ?itemLabel ?coord ?town ?townLabel
   OPTIONAL { ?item wdt:P276 ?town . }
   OPTIONAL { ?item wdt:P18 ?itemImage . }
   OPTIONAL { ?item wdt:P359 ?monumentNumber . }
+  OPTIONAL { ?item schema:description ?descriptionNl . FILTER(LANG(?descriptionNl) = "nl") }
+  OPTIONAL { ?item schema:description ?descriptionEn . FILTER(LANG(?descriptionEn) = "en") }
   OPTIONAL {
     ?item skos:altLabel ?aliasNl .
     FILTER(LANG(?aliasNl) = "nl")

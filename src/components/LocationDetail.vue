@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { imageSource, imageUrls, safeUrl, thumbnail } from '../lib/images'
-import { fetchHeritage, formatRegistrationDate, monumentNumbers } from '../lib/heritage'
+import { fetchHeritage, formatRegistrationDate, monumentNumbers, preferredDescription } from '../lib/heritage'
 const props = defineProps({ row: { type: Object, required: true }, categories: { type: Array, required: true } })
 const emit = defineEmits(['close'])
 const dialog = ref(null)
@@ -12,6 +12,7 @@ const heritage = ref([])
 const heritageLoading = ref(false)
 const heritageError = ref(false)
 const heritageController = new AbortController()
+const description = computed(() => preferredDescription(props.row, heritage.value))
 async function loadHeritage() {
   heritageLoading.value = true
   heritageError.value = false
@@ -74,21 +75,19 @@ onBeforeUnmount(() => heritageController.abort())
           </div>
         </div>
       </section>
-      <section v-if="monumentNumbers(row).length" class="heritage-section" aria-labelledby="heritage-title">
-        <p class="eyebrow">RIJKSDIENST VOOR HET CULTUREEL ERFGOED</p>
+      <section class="heritage-section" aria-labelledby="heritage-title">
+        <p class="eyebrow">{{ description?.source === 'RCE' ? 'RIJKSDIENST VOOR HET CULTUREEL ERFGOED' : 'WIKIDATA' }}</p>
         <h2 id="heritage-title">Het verhaal van deze plek</h2>
+        <p v-if="description" class="heritage-description">{{ description.text }}</p>
+        <p v-else-if="!heritageLoading">Er is nog geen omschrijving beschikbaar voor deze locatie.</p>
         <p v-if="heritageLoading" role="status">Erfgoedgegevens laden…</p>
         <div v-else-if="heritageError" role="status"><p>De erfgoedgegevens konden niet worden geladen.</p><button class="location-button" type="button" @click="loadHeritage">Opnieuw proberen</button></div>
-        <p v-else-if="!heritage.length">Geen bijbehorende registratie gevonden bij de RCE.</p>
         <article v-for="record in heritage" :key="record.rijksmonumentnummer.value" class="heritage-record">
           <dl class="heritage-facts">
             <div><dt>Rijksmonument</dt><dd><a :href="`https://monumentenregister.cultureelerfgoed.nl/monumenten/${record.rijksmonumentnummer.value}`" target="_blank" rel="noopener noreferrer">{{ record.rijksmonumentnummer.value }} ↗</a></dd></div>
             <div v-if="record.datumInschrijving?.value"><dt>Ingeschreven in het monumentenregister</dt><dd><time :datetime="record.datumInschrijving.value">{{ formatRegistrationDate(record.datumInschrijving.value) }}</time></dd></div>
             <div v-if="record.functie?.value"><dt>Oorspronkelijke functie</dt><dd>{{ record.functie.value }}</dd></div>
           </dl>
-          <h3>Omschrijving</h3>
-          <p v-if="record.omschrijving?.value" class="heritage-description">{{ record.omschrijving.value }}</p>
-          <p v-else>Er is geen omschrijving beschikbaar voor dit monument.</p>
         </article>
       </section>
       <footer class="detail-bottom"><p>Elke plek heeft een verhaal.<br><strong>Ontdek het volgende op de kaart.</strong></p><button class="location-button" type="button" @click="dialog.close()">Verder ontdekken ↗</button></footer>
