@@ -198,3 +198,13 @@ button:focus-visible, a:focus-visible, .image-carousel:focus-visible { outline: 
   .gallery-footer, .detail-bottom { align-items: flex-start; flex-direction: column; }
 }
 @media (prefers-reduced-motion: reduce) { .category-card img { transition: none; } }
+
+.heritage-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #203b3420; }
+.heritage-section h2 { font: clamp(1.8rem, 4vw, 2.8rem) Georgia, serif; margin: .5rem 0 1.5rem; letter-spacing: -.03em; }
+.heritage-record { margin-top: 1.5rem; }
+.heritage-record h3 { font-weight: 700; margin-bottom: .75rem; }
+.heritage-facts { display: flex; flex-wrap: wrap; gap: 1.5rem 3rem; padding: 1.25rem 0; margin-bottom: 1.5rem; }
+.heritage-facts dt { font-size: .75rem; color: #63705f; margin-bottom: .3rem; }
+.heritage-facts dd { margin: 0; font-weight: 600; }
+.heritage-facts a { color: inherit; text-underline-offset: 4px; }
+.heritage-description { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 80ch; font-size: 1rem; line-height: 1.85; }
