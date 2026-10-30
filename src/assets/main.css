@@ -68,3 +68,5 @@ h1 {
   .page-header { align-items: flex-start; flex-direction: column; gap: 1rem; }
   .map { height: 60vh; }
 }
+
+.leaflet-popup-content { overflow-wrap: anywhere; max-height: 240px; overflow-y: auto; }

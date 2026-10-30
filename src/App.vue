@@ -2,6 +2,52 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { fetchGeodata } from './lib/sparql'
+import { geodataEndpoint, geodataQuery } from './lib/geodata'
+
+const loading = ref(false)
+const queryStatus = ref('Geodata laden…')
+const queryError = ref(false)
+let dataLayer
+let requestController
+
+async function fetchPoints() {
+  if (loading.value) return
+  queryError.value = false
+  loading.value = true
+  queryStatus.value = 'Geodata ophalen…'
+  const controller = new AbortController()
+  requestController = controller
+  try {
+    const { points, skipped } = await fetchGeodata({
+      endpoint: geodataEndpoint,
+      query: geodataQuery,
+      signal: controller.signal,
+    })
+    if (!map) return
+    const nextLayer = L.featureGroup()
+    for (const { coordinates, row } of points) {
+      const popup = document.createElement('div')
+      for (const [name, binding] of Object.entries(row)) {
+        const line = document.createElement('p')
+        line.textContent = `${name}: ${binding?.value ?? ''}`
+        popup.append(line)
+      }
+      L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: '#b45309', fillOpacity: 0.9 })
+        .bindPopup(popup).addTo(nextLayer)
+    }
+    dataLayer?.remove()
+    dataLayer = nextLayer.addTo(map)
+    if (points.length) map.fitBounds(dataLayer.getBounds(), { padding: [32, 32], maxZoom: 15 })
+    queryStatus.value = `${points.length} locaties geladen.${skipped ? ` ${skipped} locaties zonder geldige coördinaten overgeslagen.` : ''}`
+  } catch (error) {
+    queryError.value = true
+    if (map) queryStatus.value = 'Locaties konden niet worden geladen. Probeer het later opnieuw.'
+  } finally {
+    loading.value = false
+    if (requestController === controller) requestController = null
+  }
+}
 
 const mapElement = ref(null)
 const locating = ref(false)
@@ -37,6 +83,8 @@ onMounted(() => {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map)
 
+  fetchPoints()
+
   map.on('locationfound', ({ latlng, accuracy }) => {
     locating.value = false
     if (position) {
@@ -63,6 +111,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  requestController?.abort()
   resizeObserver?.disconnect()
   cancelAnimationFrame(resizeFrame)
   map?.stopLocate()
@@ -84,6 +133,7 @@ onBeforeUnmount(() => {
       </button>
     </header>
     <p class="status" :class="{ error: locationError }" role="status" aria-live="polite">{{ status }}</p>
+    <p class="status" :class="{ error: queryError }" role="status" aria-live="polite">{{ queryStatus }}</p>
     <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Nederland"></div>
     <p class="location-note">GPS gebruikt de locatievoorzieningen van je apparaat. Je browser vraagt eerst om toestemming.</p>
   </main>

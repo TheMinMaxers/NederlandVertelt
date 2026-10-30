@@ -36,3 +36,22 @@ npm run dev
 ```sh
 npm run build
 ```
+
+### Application SPARQL data
+
+The map loads geodata automatically on mount. Configure the application's
+endpoint and SELECT query in `src/lib/geodata.js`; the default example loads
+four Dutch cities from Wikidata. There is no query editor in the interface.
+
+`src/lib/sparql.js` exports `querySparql({ endpoint, query, signal, timeoutMs })`
+for raw SELECT results and `fetchGeodata(...)` for map-ready points plus a
+skipped-row count. Both support cancellation and a 30-second default timeout.
+The endpoint must allow cross-origin browser requests (CORS).
+
+Coordinates must be WGS84 decimal degrees in `?lat` / `?lon` (also
+`?latitude`, `?longitude`, `?lng`), or WKT `POINT(longitude latitude)` in
+`?coord`, `?location`, or `?wkt`. Other fields appear as plain text in popups.
+Invalid coordinates are skipped. GPS remains a separate map layer.
+Use `LIMIT` to keep queries manageable.
+
+Run checks with `node --test src/lib/sparql.test.js` and `npm run build`.
