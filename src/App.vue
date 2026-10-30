@@ -4,6 +4,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { fetchGeodata } from './lib/sparql'
 import LocationDetail from './components/LocationDetail.vue'
+import { createMapPopup } from './lib/mapPopup'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
 
@@ -72,7 +73,8 @@ function renderPoints(fit = false) {
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
     L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
-      .on('click', () => openLocation(row)).bindTooltip(tooltip).addTo(nextLayer)
+      .bindPopup(() => createMapPopup(row, () => openLocation(row)), { maxWidth: 300, minWidth: 220 })
+      .bindTooltip(tooltip).addTo(nextLayer)
   }
   dataLayer?.remove()
   dataLayer = nextLayer.addTo(map)
@@ -154,52 +156,39 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="map-page">
-    <header class="page-header">
-      <div>
-        <p class="brand">Nederland<span>Vertelt.</span></p>
-        <p class="eyebrow section-kicker">DICHTBIJ. BIJZONDER. ZEELAND.</p>
-        <h1>Een kaart vol <em>verhalen.</em></h1>
-        <p>Van verborgen kunst tot iconische bruggen. Ontdek wat er om je heen te zien is.</p>
+  <main class="map-page map-experience">
+    <header class="page-header map-topbar">
+      <div class="map-topbar-copy">
+        <h1 class="brand">Nederland<span>Vertelt.</span></h1>
+        <p>Ontdek de bruggen, architectuur en kunst van Zeeland. Klik op een punt en laat de plek vertellen.</p>
+        <p v-if="loading || queryError" class="status" :class="{ error: queryError }" role="status">{{ queryStatus }} <button v-if="queryError" class="intro-read-more" type="button" @click="fetchPoints">Opnieuw laden</button></p>
       </div>
-      <button class="location-button" type="button" :disabled="locating" @click="locate">
-        {{ locating ? 'Locatie bepalen…' : '⌖ Mijn locatie' }}
-      </button>
+      <button class="location-button" type="button" aria-haspopup="dialog" @click="filterDialog.showModal()">☷ Filters <span class="filter-count">{{ selectedCategories.length }}</span></button>
     </header>
-    <p class="status" :class="{ error: locationError }" role="status" aria-live="polite">{{ status }}</p>
-    <p class="status" :class="{ error: queryError }" role="status" aria-live="polite">{{ queryStatus }}</p>
-    <button v-if="queryError" class="location-button" type="button" :disabled="loading" @click="fetchPoints">Opnieuw laden</button>
-    <div class="filter-toolbar">
-      <button class="location-button" type="button" @click="filterDialog.showModal()">Filters ({{ selectedCategories.length }}/3)</button>
-      <span role="status">{{ visibleCount }} locaties zichtbaar</span>
-    </div>
-    <dialog ref="filterDialog" class="filter-dialog" aria-labelledby="filter-title" @click="event => { if (event.target === filterDialog) filterDialog.close() }">
-      <h2 id="filter-title">Wat wil je zien?</h2>
-      <p>Vink de categorieën aan die je op de kaart wilt zien.</p>
-      <fieldset>
-        <legend>Categorieën</legend>
-        <label v-for="category in categories" :key="category.id" class="filter-option">
-          <input v-model="selectedCategories" type="checkbox" :value="category.id" />
-          <img v-if="categoryImages[category.id]" class="filter-category-image" :src="categoryImages[category.id]" alt="" />
-          <span class="category-dot" :style="{ background: category.color }"></span>
-          {{ category.label }}
+    <dialog ref="filterDialog" class="filter-dialog map-filter-dialog" aria-labelledby="filter-title" @click="event => { if (event.target === filterDialog) filterDialog.close() }">
+      <div class="filter-dialog-heading">
+        <div><p class="eyebrow">MAAK DE KAART VAN JOU</p><h2 id="filter-title">Wat wil je ontdekken?</h2></div>
+        <button class="back-button" type="button" autofocus aria-label="Filters sluiten" @click="filterDialog.close()">Sluiten ×</button>
+      </div>
+      <p>Kies één of meer categorieën. Je selectie wordt direct toegepast.</p>
+      <fieldset class="filter-card-grid">
+        <legend class="visually-hidden">Categorieën</legend>
+        <label v-for="category in categories" :key="category.id" class="category-card filter-image-card" :class="{ 'is-selected': selectedCategories.includes(category.id) }">
+          <img v-if="categoryImages[category.id]" :src="categoryImages[category.id]" alt="" loading="lazy" @error="delete categoryImages[category.id]" />
+          <span class="category-card-shade"></span>
+          <span class="category-card-copy"><small>ONTDEK ZEELAND</small><strong>{{ category.label }}</strong></span>
+          <input v-model="selectedCategories" type="checkbox" :value="category.id" :aria-label="category.label" />
         </label>
       </fieldset>
-      <p v-if="!selectedCategories.length">Geen categorie geselecteerd. De kaart toont geen locaties.</p>
-      <p class="location-note">Architectuur omvat gebouwen. De selectie wordt direct toegepast.</p>
-      <form method="dialog"><button class="location-button" autofocus>Sluiten</button></form>
+      <p v-if="!selectedCategories.length" role="status">Vink een categorie aan om locaties op de kaart te zien.</p>
+      <p v-else role="status">{{ visibleCount }} locaties zichtbaar · Architectuur omvat gebouwen.</p>
+      <div class="filter-location">
+        <button class="back-button" type="button" :disabled="locating" @click="locate">{{ locating ? 'Locatie bepalen…' : '⌖ Vind mijn locatie' }}</button>
+        <p class="location-note" :class="{ error: locationError }" role="status">{{ status }}</p>
+      </div>
+      <form method="dialog" class="filter-apply"><button class="location-button">Toon de kaart ↗</button></form>
     </dialog>
-    <section class="category-strip" aria-label="Ontdek per categorie">
-      <button v-for="category in categories" :key="category.id" class="category-card" :class="{ 'is-selected': selectedCategories.includes(category.id) }" type="button" :aria-pressed="selectedCategories.includes(category.id)" @click="selectedCategories = selectedCategories.includes(category.id) ? selectedCategories.filter(id => id !== category.id) : [...selectedCategories, category.id]">
-        <img v-if="categoryImages[category.id]" :src="categoryImages[category.id]" alt="" loading="lazy" @error="delete categoryImages[category.id]" />
-        <span class="category-card-shade"></span>
-        <span class="category-card-copy"><small>ONTDEK ZEELAND</small><strong>{{ category.label }}</strong></span>
-        <span class="category-check" aria-hidden="true">{{ selectedCategories.includes(category.id) ? '✓' : '+' }}</span>
-      </button>
-    </section>
-    <div class="map-heading"><div><p class="eyebrow">JOUW VOLGENDE ONTDEKKING</p><h2>Ga op verkenning</h2></div><span>Klik op een punt om het verhaal te openen ↗</span></div>
-    <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Nederland"></div>
+    <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Zeeland"></div>
     <LocationDetail v-if="selectedLocation" :row="selectedLocation" :categories="categories" @close="selectedLocation = null" />
-    <p class="location-note">GPS gebruikt de locatievoorzieningen van je apparaat. Je browser vraagt eerst om toestemming.</p>
   </main>
 </template>

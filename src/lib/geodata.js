@@ -8,6 +8,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX schema: <http://schema.org/>
 
 SELECT ?item ?itemLabel ?coord ?town ?townLabel
+       (MIN(?inceptionDate) AS ?inception)
        (COALESCE(SAMPLE(?descriptionNl), SAMPLE(?descriptionEn)) AS ?itemDescription)
        (GROUP_CONCAT(DISTINCT STR(?itemImage); separator="|") AS ?images)
        (GROUP_CONCAT(DISTINCT STR(?monumentNumber); separator="|") AS ?rijksmonumentnummer)
@@ -28,6 +29,7 @@ SELECT ?item ?itemLabel ?coord ?town ?townLabel
   OPTIONAL { ?item wdt:P276 ?town . }
   OPTIONAL { ?item wdt:P18 ?itemImage . }
   OPTIONAL { ?item wdt:P359 ?monumentNumber . }
+  OPTIONAL { ?item wdt:P571 ?inceptionDate . }
   OPTIONAL { ?item schema:description ?descriptionNl . FILTER(LANG(?descriptionNl) = "nl") }
   OPTIONAL { ?item schema:description ?descriptionEn . FILTER(LANG(?descriptionEn) = "en") }
   OPTIONAL {
