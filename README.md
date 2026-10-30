@@ -120,3 +120,18 @@ back into a single registration. Cross-source matching still uses monument
 numbers in the application: Wikidata rejects the RCE endpoint as a federated
 `SERVICE` ("Service URI ... is not allowed"). Unioning unjoined rows from the
 two sources would not attach descriptions to map locations.
+
+
+## Shortest walking routes
+
+The walking-route feature is integrated into the existing Leaflet map and location detail dialog.
+
+1. Create an API key at [openrouteservice.org](https://openrouteservice.org/).
+2. For local development, copy `.env.example` to `.env.local` and set `VITE_ORS_API_KEY=your-key`.
+3. For GitHub Pages, add a GitHub Actions repository secret named `VITE_ORS_API_KEY`. The Pages workflow passes it to the Vite build.
+4. Open the website, choose **Mijn locatie**, allow GPS access, select a location marker, and choose **Bereken wandelroute**.
+5. Close the location detail dialog to view the route drawn on the map.
+
+The route request uses the OpenRouteService `foot-walking` profile with the `shortest` preference. OpenRouteService's public API has usage and distance limits; see its [API restrictions](https://openrouteservice.org/restrictions/).
+
+**API-key warning:** this project is a static GitHub Pages site. Vite embeds `VITE_*` variables in client-side JavaScript, so the API key is visible to visitors even when supplied through a GitHub Actions secret. Restrict the key to the production domain in your OpenRouteService account, monitor its usage, and use a server-side proxy if you need the key to remain confidential. The route feature shows a clear message if no key is configured.
