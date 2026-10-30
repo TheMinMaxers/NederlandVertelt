@@ -2,8 +2,15 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { imageSource, imageUrls, safeUrl, thumbnail } from '../lib/images'
 import { fetchHeritage, formatRegistrationDate, monumentNumbers } from '../lib/heritage'
-const props = defineProps({ row: { type: Object, required: true }, categories: { type: Array, required: true } })
-const emit = defineEmits(['close'])
+const props = defineProps({
+  row: { type: Object, required: true },
+  categories: { type: Array, required: true },
+  hasUserLocation: { type: Boolean, default: false },
+  routeLoading: { type: Boolean, default: false },
+  routeError: { type: String, default: '' },
+  routeSummary: { type: Object, default: null },
+})
+const emit = defineEmits(['close', 'request-route'])
 const dialog = ref(null)
 const carousel = ref(null)
 const active = ref(0)
@@ -58,6 +65,21 @@ onBeforeUnmount(() => heritageController.abort())
         <p v-if="row.aliasesNl?.value" class="detail-aliases">Ook bekend als: {{ row.aliasesNl.value }}</p>
         <p v-if="row.townLabel?.value || row.town?.value" class="detail-town">Stad: <a v-if="safeUrl(row.town?.value)" :href="safeUrl(row.town.value)" target="_blank" rel="noopener noreferrer">{{ row.townLabel?.value || row.town.value }} ↗</a><span v-else>{{ row.townLabel.value }}</span></p>
       </div>
+      <section class="walking-route" aria-labelledby="walking-route-title">
+        <div>
+          <p class="eyebrow">ONTDEK TE VOET</p>
+          <h2 id="walking-route-title">Wandelroute naar deze plek</h2>
+          <p v-if="!hasUserLocation">Bepaal eerst je huidige locatie via ‘Mijn locatie’ op de kaart.</p>
+          <p v-else>Bereken de kortste wandelroute vanaf jouw huidige locatie.</p>
+        </div>
+        <button class="location-button" type="button" :disabled="routeLoading || !hasUserLocation" @click="emit('request-route')">
+          {{ routeLoading ? 'Route berekenen…' : 'Bereken wandelroute' }}
+        </button>
+        <p v-if="routeError" class="route-message route-error" role="alert">{{ routeError }}</p>
+        <p v-if="routeSummary" class="route-message" role="status">
+          Kortste route: <strong>{{ routeSummary.distance }}</strong> · geschatte looptijd: <strong>{{ routeSummary.duration }}</strong>.
+        </p>
+      </section>
       <section class="gallery" aria-label="Foto’s van de locatie">
         <div v-if="images.length" ref="carousel" class="image-carousel" tabindex="0" aria-label="Fotocarrousel, gebruik de pijltjestoetsen om te scrollen" @scroll.passive="updateSlide" @keydown.left.prevent="move(-1)" @keydown.right.prevent="move(1)">
           <figure v-for="(url, index) in images" :key="url" class="image-slide">

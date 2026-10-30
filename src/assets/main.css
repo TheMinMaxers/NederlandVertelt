@@ -208,3 +208,12 @@ button:focus-visible, a:focus-visible, .image-carousel:focus-visible { outline: 
 .heritage-facts dd { margin: 0; font-weight: 600; }
 .heritage-facts a { color: inherit; text-underline-offset: 4px; }
 .heritage-description { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 80ch; font-size: 1rem; line-height: 1.85; }
+
+
+.walking-route { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0 2rem; padding: 1.25rem 1.5rem; border: 1px solid #203b3420; border-radius: 1rem; background: #f5f2e8; }
+.walking-route h2 { margin: .35rem 0; font: clamp(1.35rem, 3vw, 2rem) Georgia, serif; }
+.walking-route p:not(.eyebrow) { margin: .35rem 0 0; color: #63705f; font-size: .9rem; }
+.walking-route .route-message { flex-basis: 100%; margin: 0; color: #203b34; }
+.walking-route .route-error { color: #a32f24; }
+.location-button:disabled { opacity: .55; cursor: not-allowed; }
+@media (max-width: 650px) { .walking-route { align-items: flex-start; flex-direction: column; } }

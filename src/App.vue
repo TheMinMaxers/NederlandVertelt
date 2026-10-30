@@ -2,7 +2,8 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { fetchGeodata } from './lib/sparql'
+import { fetchGeodata, parsePoint } from './lib/sparql'
+import { calculateWalkingRoute, formatDistance, formatDuration } from './lib/routing'
 import LocationDetail from './components/LocationDetail.vue'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
@@ -23,10 +24,76 @@ let loadedPoints = []
 let requestController
 
 const selectedLocation = ref(null)
+const selectedLocationCoordinates = ref(null)
+const currentCoordinates = ref(null)
+const routeLoading = ref(false)
+const routeError = ref('')
+const routeSummary = ref(null)
+let routeLayer
+let routeController
 const categoryImages = ref({})
 
-function openLocation(row) {
+function clearRoute() {
+  routeController?.abort()
+  routeController = null
+  routeLayer?.remove()
+  routeLayer = null
+  routeSummary.value = null
+  routeError.value = ''
+  routeLoading.value = false
+}
+
+function openLocation(row, coordinates) {
+  clearRoute()
   selectedLocation.value = row
+  selectedLocationCoordinates.value = coordinates || parsePoint(row)
+}
+
+async function requestWalkingRoute() {
+  if (!currentCoordinates.value) {
+    routeError.value = 'Bepaal eerst je locatie met de knop ‘Mijn locatie’ op de kaart.'
+    return
+  }
+  if (!selectedLocationCoordinates.value) {
+    routeError.value = 'Voor deze locatie zijn geen geldige coördinaten beschikbaar.'
+    return
+  }
+
+  routeController?.abort()
+  const controller = new AbortController()
+  routeController = controller
+  routeLoading.value = true
+  routeError.value = ''
+  routeSummary.value = null
+
+  try {
+    const route = await calculateWalkingRoute({
+      start: currentCoordinates.value,
+      destination: selectedLocationCoordinates.value,
+      signal: controller.signal,
+    })
+    if (routeController !== controller || !map) return
+
+    routeLayer?.remove()
+    routeLayer = L.geoJSON(route.geometry, {
+      style: { color: '#2563eb', weight: 6, opacity: 0.88, lineJoin: 'round' },
+    }).addTo(map)
+    map.fitBounds(routeLayer.getBounds(), { padding: [48, 48], maxZoom: 16 })
+
+    routeSummary.value = {
+      distance: formatDistance(route.distance),
+      duration: formatDuration(route.duration),
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError' && routeController === controller) {
+      routeError.value = error.message || 'De wandelroute kon niet worden berekend.'
+    }
+  } finally {
+    if (routeController === controller) {
+      routeLoading.value = false
+      routeController = null
+    }
+  }
 }
 
 async function fetchPoints() {
@@ -72,7 +139,7 @@ function renderPoints(fit = false) {
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
     L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
-      .on('click', () => openLocation(row)).bindTooltip(tooltip).addTo(nextLayer)
+      .on('click', () => openLocation(row, coordinates)).bindTooltip(tooltip).addTo(nextLayer)
   }
   dataLayer?.remove()
   dataLayer = nextLayer.addTo(map)
@@ -120,6 +187,7 @@ onMounted(() => {
 
   map.on('locationfound', ({ latlng, accuracy }) => {
     locating.value = false
+    currentCoordinates.value = [latlng.lat, latlng.lng]
     if (position) {
       position.setLatLng(latlng)
       accuracyCircle.setLatLng(latlng).setRadius(accuracy)
@@ -134,6 +202,7 @@ onMounted(() => {
   })
   map.on('locationerror', ({ code }) => {
     locating.value = false
+    currentCoordinates.value = null
     locationError.value = true
     status.value = {
       1: 'Locatietoegang geweigerd. Sta locatie toe in je browserinstellingen en probeer opnieuw.',
@@ -145,6 +214,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   requestController?.abort()
+  routeController?.abort()
+  routeLayer?.remove()
   resizeObserver?.disconnect()
   cancelAnimationFrame(resizeFrame)
   map?.stopLocate()
@@ -199,7 +270,17 @@ onBeforeUnmount(() => {
     </section>
     <div class="map-heading"><div><p class="eyebrow">JOUW VOLGENDE ONTDEKKING</p><h2>Ga op verkenning</h2></div><span>Klik op een punt om het verhaal te openen ↗</span></div>
     <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Nederland"></div>
-    <LocationDetail v-if="selectedLocation" :row="selectedLocation" :categories="categories" @close="selectedLocation = null" />
+    <LocationDetail
+      v-if="selectedLocation"
+      :row="selectedLocation"
+      :categories="categories"
+      :has-user-location="Boolean(currentCoordinates)"
+      :route-loading="routeLoading"
+      :route-error="routeError"
+      :route-summary="routeSummary"
+      @request-route="requestWalkingRoute"
+      @close="selectedLocation = null"
+    />
     <p class="location-note">GPS gebruikt de locatievoorzieningen van je apparaat. Je browser vraagt eerst om toestemming.</p>
   </main>
 </template>
