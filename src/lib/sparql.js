@@ -61,3 +61,23 @@ export function parseResults(data) {
   }
   return { points, skipped }
 }
+
+//Navid's toegevoegde code voor GPS-route start
+export function displayRoute(map, route) {
+  const coordinates = route.geometry.coordinates.map(
+    ([longitude, latitude]) => [latitude, longitude]
+  )
+
+  const routeLayer = L.polyline(coordinates, {
+    color: 'blue',
+    weight: 5,
+    opacity: 0.8
+  }).addTo(map)
+
+  map.fitBounds(routeLayer.getBounds(), {
+    padding: [40, 40]
+  })
+
+  return routeLayer
+}
+//Navid's toegevoegde code voor GPS-route eind
