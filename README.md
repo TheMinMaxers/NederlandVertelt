@@ -60,3 +60,17 @@ Invalid coordinates are skipped. GPS remains a separate map layer.
 Use `LIMIT` to keep queries manageable.
 
 Run checks with `node --test src/lib/sparql.test.js` and `npm run build`.
+
+### GitHub Pages
+
+`.github/workflows/deploy-pages.yml` builds and deploys pushes to `main`.
+In repository **Settings → Pages → Build and deployment**, choose **GitHub Actions**.
+Merge the application and workflow into `main`, then check the **Actions** tab.
+The workflow can also be started manually with **Run workflow**.
+
+Expected URL after successful deployment:
+https://theminmaxers.github.io/NederlandVertelt/
+
+The workflow uses Node 24 and builds assets with `/NederlandVertelt/` as the
+base path. Local development continues to use `/`. To verify the Pages build
+locally, run `GITHUB_ACTIONS=true npm run build`.

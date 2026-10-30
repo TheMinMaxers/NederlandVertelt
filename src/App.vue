@@ -11,6 +11,22 @@ const queryError = ref(false)
 let dataLayer
 let requestController
 
+function entityLink(label, value) {
+  const text = document.createTextNode(label)
+  try {
+    const url = new URL(value)
+    if (!['https:', 'http:'].includes(url.protocol)) return text
+    const link = document.createElement('a')
+    link.href = url.href
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
+    link.textContent = label
+    return link
+  } catch {
+    return text
+  }
+}
+
 async function fetchPoints() {
   if (loading.value) return
   queryError.value = false
@@ -28,10 +44,51 @@ async function fetchPoints() {
     const nextLayer = L.featureGroup()
     for (const { coordinates, row } of points) {
       const popup = document.createElement('div')
+      const title = document.createElement('h2')
+      title.className = 'bridge-popup-title'
+      title.append(entityLink(row.bridgeLabel?.value || 'Brug', row.bridge?.value))
+      popup.append(title)
+      if (row.aliasesNl?.value) {
+        const aliases = document.createElement('p')
+        aliases.className = 'bridge-popup-aliases'
+        aliases.textContent = `Ook bekend als: ${row.aliasesNl.value}`
+        popup.append(aliases)
+      }
+      if (row.image?.value) {
+        try {
+          const imageUrl = new URL(row.image.value)
+          if (['http:', 'https:'].includes(imageUrl.protocol)) {
+            imageUrl.protocol = 'https:'
+            if (imageUrl.hostname === 'commons.wikimedia.org' && imageUrl.pathname.startsWith('/wiki/Special:FilePath/')) {
+              imageUrl.searchParams.set('width', '480')
+            }
+            const image = document.createElement('img')
+            image.className = 'bridge-popup-image'
+            image.src = imageUrl.href
+            image.alt = row.bridgeLabel?.value || 'Afbeelding van de brug'
+            image.loading = 'lazy'
+            image.addEventListener('error', () => image.remove(), { once: true })
+            const link = document.createElement('a')
+            link.href = imageUrl.href
+            link.target = '_blank'
+            link.rel = 'noopener noreferrer'
+            link.append(image)
+            popup.append(link)
+          }
+        } catch {
+          // A missing or invalid image must not prevent the marker from rendering.
+        }
+      }
       for (const [name, binding] of Object.entries(row)) {
+        if (['image', 'coord', 'bridge', 'bridgeLabel', 'town', 'townLabel', 'aliasesNl'].includes(name)) continue
         const line = document.createElement('p')
         line.textContent = `${name}: ${binding?.value ?? ''}`
         popup.append(line)
+      }
+      if (row.townLabel?.value || row.town?.value) {
+        const town = document.createElement('p')
+        town.append('Stad: ', entityLink(row.townLabel?.value || row.town.value, row.town?.value))
+        popup.append(town)
       }
       L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: '#b45309', fillOpacity: 0.9 })
         .bindPopup(popup).addTo(nextLayer)
