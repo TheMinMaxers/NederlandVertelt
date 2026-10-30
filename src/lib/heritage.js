@@ -1,0 +1,59 @@
+import { querySparql } from './sparql.js'
+
+export const heritageEndpoint = 'https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/services/cho/sparql'
+const cache = new Map()
+
+export function monumentNumbers(row) {
+  return [...new Set((row.rijksmonumentnummer?.value || '').split('|')
+    .map(number => number.trim()).filter(number => /^\d+$/.test(number)))]
+}
+
+export function heritageQuery(numbers) {
+  if (!numbers.length || numbers.some(number => !/^\d+$/.test(number))) throw new Error('Invalid monument number.')
+  return `PREFIX ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+SELECT ?rijksmonumentnummer
+       (GROUP_CONCAT(DISTINCT ?text; separator="\\n\\n") AS ?omschrijving)
+       (MIN(?date) AS ?datumInschrijving)
+       (GROUP_CONCAT(DISTINCT ?functionLabel; separator=", ") AS ?functie)
+WHERE {
+  VALUES ?rijksmonumentnummer { ${numbers.map(number => `"${number}"`).join(' ')} }
+  ?monument ceo:rijksmonumentnummer ?rijksmonumentnummer .
+  OPTIONAL {
+    { ?monument ceo:heeftOmschrijving/ceo:omschrijving ?text . }
+    UNION
+    { ?monument ceo:datumInschrijvingInMonumentenregister ?date . }
+    UNION
+    {
+      ?monument ceo:heeftOorspronkelijkeFunctie ?function .
+      ?function ceo:formeelStandpunt true ; ceo:heeftFunctieNaam/skos:prefLabel ?functionLabel .
+      FILTER(LANG(?functionLabel) = "nl" || LANG(?functionLabel) = "")
+    }
+  }
+}
+GROUP BY ?rijksmonumentnummer`
+}
+
+// Left join on Wikidata P359 = RCE ceo:rijksmonumentnummer. Never join by labels.
+export function joinHeritage(row, bindings) {
+  const numbers = monumentNumbers(row)
+  return bindings.filter(binding => numbers.includes(binding.rijksmonumentnummer?.value?.trim()))
+}
+
+export async function fetchHeritage(row, { signal } = {}) {
+  const numbers = monumentNumbers(row)
+  if (!numbers.length) return []
+  const key = [...numbers].sort().join('|')
+  if (cache.has(key)) return cache.get(key)
+  const data = await querySparql({ endpoint: heritageEndpoint, query: heritageQuery(numbers), signal, timeoutMs: 30000 })
+  const matches = joinHeritage(row, data.results.bindings)
+  cache.set(key, matches)
+  return matches
+}
+
+export function formatRegistrationDate(value) {
+  const match = /^(\d{4}-\d{2}-\d{2})(?:$|T|Z|[+-])/.exec(value || '')
+  if (!match) return value || ''
+  const date = new Date(`${match[1]}T00:00:00Z`)
+  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeZone: 'UTC' }).format(date)
+}
