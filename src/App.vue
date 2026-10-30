@@ -3,6 +3,8 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { fetchGeodata } from './lib/sparql'
+import LocationDetail from './components/LocationDetail.vue'
+import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
 
 const loading = ref(false)
@@ -20,20 +22,11 @@ const visibleCount = ref(0)
 let loadedPoints = []
 let requestController
 
-function entityLink(label, value) {
-  const text = document.createTextNode(label)
-  try {
-    const url = new URL(value)
-    if (!['https:', 'http:'].includes(url.protocol)) return text
-    const link = document.createElement('a')
-    link.href = url.href
-    link.target = '_blank'
-    link.rel = 'noopener noreferrer'
-    link.textContent = label
-    return link
-  } catch {
-    return text
-  }
+const selectedLocation = ref(null)
+const categoryImages = ref({})
+
+function openLocation(row) {
+  selectedLocation.value = row
 }
 
 async function fetchPoints() {
@@ -51,6 +44,10 @@ async function fetchPoints() {
     })
     if (!map) return
     loadedPoints = points
+    for (const category of categories) {
+      const point = points.find(({ row }) => (row.categories?.value || '').split(',').includes(category.id) && imageUrls(row).length)
+      if (point) categoryImages.value[category.id] = thumbnail(imageUrls(point.row)[0], 600)
+    }
     renderPoints(true)
     queryStatus.value = `${points.length} locaties geladen.${skipped ? ` ${skipped} locaties zonder geldige coördinaten overgeslagen.` : ''}`
   } catch (error) {
@@ -72,55 +69,10 @@ function renderPoints(fit = false) {
   for (const { coordinates, row } of loadedPoints) {
     const matches = (row.categories?.value || '').split(',').filter(category => selectedCategories.value.includes(category))
     if (!matches.length) continue
-    const popup = document.createElement('div')
-    const title = document.createElement('h2')
-    title.className = 'bridge-popup-title'
-    title.append(entityLink(row.itemLabel?.value || 'Locatie', row.item?.value))
-    popup.append(title)
-    if (row.aliasesNl?.value) {
-      const aliases = document.createElement('p')
-      aliases.className = 'bridge-popup-aliases'
-      aliases.textContent = `Ook bekend als: ${row.aliasesNl.value}`
-      popup.append(aliases)
-    }
-    if (row.image?.value) {
-      try {
-        const imageUrl = new URL(row.image.value)
-        if (['http:', 'https:'].includes(imageUrl.protocol)) {
-          imageUrl.protocol = 'https:'
-          if (imageUrl.hostname === 'commons.wikimedia.org' && imageUrl.pathname.startsWith('/wiki/Special:FilePath/')) {
-            imageUrl.searchParams.set('width', '480')
-          }
-          const image = document.createElement('img')
-          image.className = 'bridge-popup-image'
-          image.src = imageUrl.href
-          image.alt = row.itemLabel?.value || 'Afbeelding van de locatie'
-          image.loading = 'lazy'
-          image.addEventListener('error', () => image.remove(), { once: true })
-          const link = document.createElement('a')
-          link.href = imageUrl.href
-          link.target = '_blank'
-          link.rel = 'noopener noreferrer'
-          link.append(image)
-          popup.append(link)
-        }
-      } catch {
-        // A missing or invalid image must not prevent the marker from rendering.
-      }
-    }
-    for (const [name, binding] of Object.entries(row)) {
-      if (['image', 'coord', 'item', 'itemLabel', 'categories', 'town', 'townLabel', 'aliasesNl'].includes(name)) continue
-      const line = document.createElement('p')
-      line.textContent = `${name}: ${binding?.value ?? ''}`
-      popup.append(line)
-    }
-    if (row.townLabel?.value || row.town?.value) {
-      const town = document.createElement('p')
-      town.append('Stad: ', entityLink(row.townLabel?.value || row.town.value, row.town?.value))
-      popup.append(town)
-    }
+    const tooltip = document.createElement('span')
+    tooltip.textContent = row.itemLabel?.value || 'Locatie'
     L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
-      .bindPopup(popup).addTo(nextLayer)
+      .on('click', () => openLocation(row)).bindTooltip(tooltip).addTo(nextLayer)
   }
   dataLayer?.remove()
   dataLayer = nextLayer.addTo(map)
@@ -205,9 +157,10 @@ onBeforeUnmount(() => {
   <main class="map-page">
     <header class="page-header">
       <div>
-        <p class="eyebrow">NederlandVertelt</p>
-        <h1>Ontdek Nederland</h1>
-        <p>Verken de kaart of vind je huidige locatie.</p>
+        <p class="brand">Nederland<span>Vertelt.</span></p>
+        <p class="eyebrow section-kicker">DICHTBIJ. BIJZONDER. ZEELAND.</p>
+        <h1>Een kaart vol <em>verhalen.</em></h1>
+        <p>Van verborgen kunst tot iconische bruggen. Ontdek wat er om je heen te zien is.</p>
       </div>
       <button class="location-button" type="button" :disabled="locating" @click="locate">
         {{ locating ? 'Locatie bepalen…' : '⌖ Mijn locatie' }}
@@ -227,6 +180,7 @@ onBeforeUnmount(() => {
         <legend>Categorieën</legend>
         <label v-for="category in categories" :key="category.id" class="filter-option">
           <input v-model="selectedCategories" type="checkbox" :value="category.id" />
+          <img v-if="categoryImages[category.id]" class="filter-category-image" :src="categoryImages[category.id]" alt="" />
           <span class="category-dot" :style="{ background: category.color }"></span>
           {{ category.label }}
         </label>
@@ -235,7 +189,17 @@ onBeforeUnmount(() => {
       <p class="location-note">Architectuur omvat gebouwen. De selectie wordt direct toegepast.</p>
       <form method="dialog"><button class="location-button" autofocus>Sluiten</button></form>
     </dialog>
+    <section class="category-strip" aria-label="Ontdek per categorie">
+      <button v-for="category in categories" :key="category.id" class="category-card" :class="{ 'is-selected': selectedCategories.includes(category.id) }" type="button" :aria-pressed="selectedCategories.includes(category.id)" @click="selectedCategories = selectedCategories.includes(category.id) ? selectedCategories.filter(id => id !== category.id) : [...selectedCategories, category.id]">
+        <img v-if="categoryImages[category.id]" :src="categoryImages[category.id]" alt="" loading="lazy" @error="delete categoryImages[category.id]" />
+        <span class="category-card-shade"></span>
+        <span class="category-card-copy"><small>ONTDEK ZEELAND</small><strong>{{ category.label }}</strong></span>
+        <span class="category-check" aria-hidden="true">{{ selectedCategories.includes(category.id) ? '✓' : '+' }}</span>
+      </button>
+    </section>
+    <div class="map-heading"><div><p class="eyebrow">JOUW VOLGENDE ONTDEKKING</p><h2>Ga op verkenning</h2></div><span>Klik op een punt om het verhaal te openen ↗</span></div>
     <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Nederland"></div>
+    <LocationDetail v-if="selectedLocation" :row="selectedLocation" :categories="categories" @close="selectedLocation = null" />
     <p class="location-note">GPS gebruikt de locatievoorzieningen van je apparaat. Je browser vraagt eerst om toestemming.</p>
   </main>
 </template>
