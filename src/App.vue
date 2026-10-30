@@ -13,11 +13,10 @@ const queryStatus = ref('Geodata laden…')
 const queryError = ref(false)
 let dataLayer
 const filterDialog = ref(null)
-const selectedCategories = ref(['bridge', 'architecture', 'artwork'])
+const selectedCategories = ref(['bridge', 'flood-control'])
 const categories = [
   { id: 'bridge', label: 'Bruggen', color: '#b45309' },
-  { id: 'architecture', label: 'Architectuur', color: '#176456' },
-  { id: 'artwork', label: 'Kunstwerken', color: '#7c3aed' },
+  { id: 'flood-control', label: 'Waterkeringen', color: '#0369a1' },
 ]
 const visibleCount = ref(0)
 let loadedPoints = []
@@ -42,6 +41,7 @@ async function fetchPoints() {
       endpoint: geodataEndpoint,
       query: geodataQuery,
       signal: controller.signal,
+      timeoutMs: 60000,
     })
     if (!map) return
     loadedPoints = points
@@ -160,7 +160,7 @@ onBeforeUnmount(() => {
     <header class="page-header map-topbar">
       <div class="map-topbar-copy">
         <h1 class="brand">Nederland<span>Vertelt.</span></h1>
-        <p>Ontdek de bruggen, architectuur en kunst van Zeeland. Klik op een punt en laat de plek vertellen.</p>
+        <p>Ontdek de bruggen en waterkeringen van Zeeland. Klik op een punt en laat de plek vertellen.</p>
         <p v-if="loading || queryError" class="status" :class="{ error: queryError }" role="status">{{ queryStatus }} <button v-if="queryError" class="intro-read-more" type="button" @click="fetchPoints">Opnieuw laden</button></p>
       </div>
       <button class="location-button" type="button" aria-haspopup="dialog" @click="filterDialog.showModal()">☷ Filters <span class="filter-count">{{ selectedCategories.length }}</span></button>
@@ -181,7 +181,7 @@ onBeforeUnmount(() => {
         </label>
       </fieldset>
       <p v-if="!selectedCategories.length" role="status">Vink een categorie aan om locaties op de kaart te zien.</p>
-      <p v-else role="status">{{ visibleCount }} locaties zichtbaar · Architectuur omvat gebouwen.</p>
+      <p v-else role="status">{{ visibleCount }} locaties zichtbaar</p>
       <div class="filter-location">
         <button class="back-button" type="button" :disabled="locating" @click="locate">{{ locating ? 'Locatie bepalen…' : '⌖ Vind mijn locatie' }}</button>
         <p class="location-note" :class="{ error: locationError }" role="status">{{ status }}</p>

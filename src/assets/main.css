@@ -1,5 +1,14 @@
 @import './base.css';
 
+html,
+body {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   background: #fcdda4;
   color: #183b36;
@@ -210,8 +219,8 @@ button:focus-visible, a:focus-visible, .image-carousel:focus-visible { outline: 
 .heritage-description { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 80ch; font-size: 1rem; line-height: 1.85; }
 
 /* Map-first layout. */
-#app { padding: 0; }
-.map-experience { max-width: none; height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+#app { position: fixed; inset: 0; height: 100%; height: 100dvh; padding: 0; overflow: hidden; }
+.map-experience { max-width: none; width: 100%; height: 100%; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 .map-topbar.page-header { flex: 0 0 auto; flex-direction: row; align-items: center; padding: 1.2rem clamp(1rem, 3vw, 3rem); gap: 1.5rem; border-bottom: 1px solid #d2d4d0; background: #e9eae7; }
 .map-topbar .brand { font-family: inherit; font-size: 1.55rem; font-weight: 800; letter-spacing: -.05em; line-height: 1.2; margin: 0 0 .4rem; }
 .map-topbar-copy > p { font-size: .85rem; line-height: 1.5; color: #536158; max-width: 760px; }
@@ -219,6 +228,18 @@ button:focus-visible, a:focus-visible, .image-carousel:focus-visible { outline: 
 .map-topbar .location-button { flex-shrink: 0; }
 .filter-count { display: inline-grid; place-items: center; margin-left: .5rem; width: 23px; height: 23px; border-radius: 50%; background: #ffffff25; font-size: .75rem; }
 .map-experience > .map { flex: 1 1 0; height: auto; min-height: 0; border-radius: 0; box-shadow: none; }
+.map-topbar-copy { min-width: 0; }
+.map-topbar.page-header {
+  padding-top: max(1.2rem, env(safe-area-inset-top));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+.map-experience .leaflet-bottom { bottom: env(safe-area-inset-bottom, 0px); }
+.map-experience .leaflet-left { left: env(safe-area-inset-left, 0px); }
+.map-experience .leaflet-right { right: env(safe-area-inset-right, 0px); }
+.detail-dialog, .map-filter-dialog { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
+.detail-topbar { padding-top: max(1.25rem, env(safe-area-inset-top)); }
+.detail-content { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
 .map-filter-dialog { width: 80vw; max-width: none; height: 80vh; height: 80dvh; max-height: 80dvh; padding: clamp(1.25rem, 4vw, 4rem); background: #f8f7f2; }
 .filter-dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .filter-dialog-heading h2 { font: clamp(1.8rem, 4vw, 3.2rem) Georgia, serif; letter-spacing: -.04em; margin-top: .5rem; }
@@ -236,11 +257,16 @@ button:focus-visible, a:focus-visible, .image-carousel:focus-visible { outline: 
 .leaflet-popup-content:has(.intro-bubble) { max-height: none; overflow: visible; }
 @media (max-width: 650px) {
   #app { padding: 0; }
-  .map-topbar.page-header { padding: 1rem; gap: .75rem; }
+  .map-topbar.page-header { padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 1rem max(1rem, env(safe-area-inset-left)); gap: .75rem; }
   .map-topbar .brand { font-size: 1.25rem; }
   .map-topbar-copy > p { font-size: .75rem; }
   .map-topbar .location-button { padding: .65rem .85rem; font-size: .8rem; }
   .map-filter-dialog .filter-card-grid { grid-template-columns: 1fr; }
   .filter-image-card { min-height: 150px; }
   .filter-dialog-heading { flex-wrap: wrap; }
+}
+
+.map-filter-dialog .filter-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 650px) {
+  .map-filter-dialog .filter-card-grid { grid-template-columns: 1fr; }
 }
