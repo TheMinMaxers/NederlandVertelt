@@ -94,3 +94,29 @@ Commons file page for attribution. Locations without photos show an empty state.
 Category cards use photos from the loaded Wikidata results and toggle filters.
 
 Run all checks with `node --test src/lib/*.test.js` and `npm run build`.
+
+### RCE enrichment
+
+Wikidata's optional P359 identifiers are returned as `rijksmonumentnummer`.
+When a location detail view opens, `src/lib/heritage.js` queries the RCE CHO
+SPARQL endpoint for those exact identifiers and joins the returned bindings by
+`ceo:rijksmonumentnummer`. This is an application-level left join across two
+endpoints; there is no SQL-style `JOIN` keyword or remote `SERVICE` dependency.
+Locations without P359 remain on the map, and RCE errors do not block Wikidata.
+Successful responses are cached for the session; closing details cancels a
+pending request. Multiple monument numbers are shown as separate registrations.
+
+The detail view displays the RCE `omschrijving`, `datumInschrijving` (the date of
+registration in the monument register, not construction), original function
+when available, and a link to the register. Descriptions render as plain text.
+
+Live verification: station Nisse (509157) matched across both endpoints and
+returned a description, registration date 1998-02-11, and function Tramstation.
+
+The Wikidata query keeps its efficient VALUES-based classification. The RCE
+query uses `UNION` for the
+optional description, registration date and function rows, then groups these
+back into a single registration. Cross-source matching still uses monument
+numbers in the application: Wikidata rejects the RCE endpoint as a federated
+`SERVICE` ("Service URI ... is not allowed"). Unioning unjoined rows from the
+two sources would not attach descriptions to map locations.

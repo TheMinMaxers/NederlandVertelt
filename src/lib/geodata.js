@@ -8,6 +8,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT ?item ?itemLabel ?coord ?town ?townLabel
        (GROUP_CONCAT(DISTINCT STR(?itemImage); separator="|") AS ?images)
+       (GROUP_CONCAT(DISTINCT STR(?monumentNumber); separator="|") AS ?rijksmonumentnummer)
        (GROUP_CONCAT(DISTINCT ?category; separator=",") AS ?categories)
        (GROUP_CONCAT(DISTINCT ?aliasNl; separator=" · ") AS ?aliasesNl) WHERE {
   {
@@ -24,6 +25,7 @@ SELECT ?item ?itemLabel ?coord ?town ?townLabel
   FILTER EXISTS { ?item wdt:P31/wdt:P279* ?class . }
   OPTIONAL { ?item wdt:P276 ?town . }
   OPTIONAL { ?item wdt:P18 ?itemImage . }
+  OPTIONAL { ?item wdt:P359 ?monumentNumber . }
   OPTIONAL {
     ?item skos:altLabel ?aliasNl .
     FILTER(LANG(?aliasNl) = "nl")
