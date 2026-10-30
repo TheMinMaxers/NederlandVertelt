@@ -120,3 +120,8 @@ back into a single registration. Cross-source matching still uses monument
 numbers in the application: Wikidata rejects the RCE endpoint as a federated
 `SERVICE` ("Service URI ... is not allowed"). Unioning unjoined rows from the
 two sources would not attach descriptions to map locations.
+
+Descriptions prefer non-empty RCE `omschrijving` text. If no RCE description is
+returned, or the RCE request fails, the detail view displays Wikidata's Dutch
+`schema:description`, falling back to English. The displayed source follows the
+selected description. If neither source has text, an empty-state message appears.

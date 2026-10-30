@@ -3,6 +3,13 @@ import { querySparql } from './sparql.js'
 export const heritageEndpoint = 'https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/services/cho/sparql'
 const cache = new Map()
 
+export function preferredDescription(row, records = []) {
+  const descriptions = [...new Set(records.map(record => record.omschrijving?.value?.trim()).filter(Boolean))]
+  if (descriptions.length) return { text: descriptions.join('\n\n'), source: 'RCE' }
+  const fallback = row.itemDescription?.value?.trim()
+  return fallback ? { text: fallback, source: 'Wikidata' } : null
+}
+
 export function monumentNumbers(row) {
   return [...new Set((row.rijksmonumentnummer?.value || '').split('|')
     .map(number => number.trim()).filter(number => /^\d+$/.test(number)))]
@@ -31,13 +38,16 @@ WHERE {
     }
   }
 }
-GROUP BY ?rijksmonumentnummer`
+GROUP BY ?rijksmonumentnummer
+HAVING(REGEX(GROUP_CONCAT(STR(?text); separator=""), "\\\\S"))`
 }
 
 // Left join on Wikidata P359 = RCE ceo:rijksmonumentnummer. Never join by labels.
 export function joinHeritage(row, bindings) {
   const numbers = monumentNumbers(row)
-  return bindings.filter(binding => numbers.includes(binding.rijksmonumentnummer?.value?.trim()))
+  return bindings.filter(binding =>
+    numbers.includes(binding.rijksmonumentnummer?.value?.trim()) &&
+    Boolean(binding.omschrijving?.value?.trim()))
 }
 
 export async function fetchHeritage(row, { signal } = {}) {
