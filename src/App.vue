@@ -41,8 +41,12 @@ async function fetchPoints() {
     if (points.length) map.fitBounds(dataLayer.getBounds(), { padding: [32, 32], maxZoom: 15 })
     queryStatus.value = `${points.length} locaties geladen.${skipped ? ` ${skipped} locaties zonder geldige coördinaten overgeslagen.` : ''}`
   } catch (error) {
+    if (!map) return
+    console.error('Could not load bridge geodata:', error)
     queryError.value = true
-    if (map) queryStatus.value = 'Locaties konden niet worden geladen. Probeer het later opnieuw.'
+    queryStatus.value = error.name === 'AbortError'
+      ? 'Het laden van de bruggen duurde te lang. Probeer opnieuw.'
+      : `Bruggen konden niet worden geladen: ${error.message}`
   } finally {
     loading.value = false
     if (requestController === controller) requestController = null
@@ -134,6 +138,7 @@ onBeforeUnmount(() => {
     </header>
     <p class="status" :class="{ error: locationError }" role="status" aria-live="polite">{{ status }}</p>
     <p class="status" :class="{ error: queryError }" role="status" aria-live="polite">{{ queryStatus }}</p>
+    <button v-if="queryError" class="location-button" type="button" :disabled="loading" @click="fetchPoints">Opnieuw laden</button>
     <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Nederland"></div>
     <p class="location-note">GPS gebruikt de locatievoorzieningen van je apparaat. Je browser vraagt eerst om toestemming.</p>
   </main>
