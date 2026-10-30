@@ -42,3 +42,14 @@ test('reports endpoint HTTP errors', async (t) => {
   await assert.rejects(querySparql({ endpoint: 'https://example.org/sparql', query: 'SELECT * WHERE {}' }), /503/)
   t.mock.restoreAll()
 })
+
+// Shape verified against the live Zeeland bridge query response.
+test('plots Wikidata bridge bindings with optional town information', () => {
+  const result = parseResults({ results: { bindings: [
+    { bridge: { type: 'uri', value: 'http://www.wikidata.org/entity/Q21088581' },
+      bridgeLabel: value('Spoorbrug over het Schelde-Rijnkanaal'),
+      coord: value('Point(4.234444 51.428611)') },
+  ] } })
+  assert.equal(result.skipped, 0)
+  assert.deepEqual(result.points[0].coordinates, [51.428611, 4.234444])
+})

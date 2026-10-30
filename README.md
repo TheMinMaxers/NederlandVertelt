@@ -40,8 +40,13 @@ npm run build
 ### Application SPARQL data
 
 The map loads geodata automatically on mount. Configure the application's
-endpoint and SELECT query in `src/lib/geodata.js`; the default example loads
-four Dutch cities from Wikidata. There is no query editor in the interface.
+endpoint and SELECT query in `src/lib/geodata.js`; the configured query loads bridges in Zeeland from Wikidata, including bridge
+subclasses and locations nested under Zeeland through administrative areas.
+The query resolves Zeeland locations in a subquery before testing bridge
+classifications to avoid expensive global bridge traversal.
+There is no result limit. Only bridges with coordinates and the relevant
+classification/location statements in Wikidata can be shown; this is not a
+complete inventory of every physical bridge. There is no query editor in the interface.
 
 `src/lib/sparql.js` exports `querySparql({ endpoint, query, signal, timeoutMs })`
 for raw SELECT results and `fetchGeodata(...)` for map-ready points plus a
