@@ -74,3 +74,12 @@ https://theminmaxers.github.io/NederlandVertelt/
 The workflow uses Node 24 and builds assets with `/NederlandVertelt/` as the
 base path. Local development continues to use `/`. To verify the Pages build
 locally, run `GITHUB_ACTIONS=true npm run build`.
+
+### Map filters
+
+The **Filters** button opens a dialog with checkboxes for bridges, architecture
+(buildings and their subclasses), and artworks in Zeeland. All start selected.
+Filters apply immediately to loaded points without another network request;
+GPS remains visible independently. Items matching multiple categories stay
+visible when any matching category is selected. Data coverage depends on
+Wikidata classification, administrative-location and coordinate statements.
