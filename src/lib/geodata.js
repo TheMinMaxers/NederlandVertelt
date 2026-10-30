@@ -22,8 +22,7 @@ SELECT ?item ?itemLabel ?coord ?town ?townLabel
   }
   VALUES (?category ?class) {
     ("bridge" wd:Q12280)
-    ("architecture" wd:Q41176)
-    ("artwork" wd:Q838948)
+    ("flood-control" wd:Q2630707)
   }
   FILTER EXISTS { ?item wdt:P31/wdt:P279* ?class . }
   OPTIONAL { ?item wdt:P276 ?town . }
