@@ -79,7 +79,7 @@ Het uitklapbare paneel **Waterstanden** toont metingen van Vlissingen, Terneuzen
 Hansweert en Zierikzee. Klik op een station om in te zoomen en de meetwaarde op
 de kaart te bekijken. De laag kan apart worden verborgen. Waarden zijn meters
 ten opzichte van NAP, geen waterdiepte of meting bij een monument. Meetmoment,
-bron en controlestatus blijven zichtbaar; metingen ouder dan twee uur worden
+en bron blijven zichtbaar; metingen ouder dan twee uur worden
 als oud gemarkeerd.
 
 De browser leest `public/data/water-levels.json` vanaf dezelfde site, omdat de

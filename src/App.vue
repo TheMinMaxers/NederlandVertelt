@@ -51,7 +51,7 @@ function showWaterStations(stations = waterStations) {
     const value = document.createElement('p')
     value.textContent = `${waterHeight(station.metersNAP)} · ${waterTime(station.measuredAt)}`
     const note = document.createElement('p')
-    note.textContent = `${isOldWaterReading(station.measuredAt) ? 'Oudere meting · ' : ''}${station.status}. Bron: Rijkswaterstaat.`
+    note.textContent = `${isOldWaterReading(station.measuredAt) ? 'Oudere meting · ' : ''}Bron: Rijkswaterstaat.`
     popup.append(title, value, note)
     const marker = L.marker(station.coordinates, {
       icon: L.divIcon({ className: 'location-marker water-marker', html: '<span aria-hidden="true">≈</span>', iconSize: [24, 24], iconAnchor: [12, 12] }),

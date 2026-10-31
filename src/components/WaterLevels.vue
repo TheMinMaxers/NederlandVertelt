@@ -40,7 +40,6 @@ onBeforeUnmount(() => { controller.abort(); clearInterval(timer) })
         <li v-for="station in stations" :key="station.code">
           <button type="button" @click="visible = true; emit('select', station)"><span>{{ station.name }} <small>{{ waterTime(station.measuredAt) }}</small></span><strong>{{ waterHeight(station.metersNAP) }}</strong></button>
           <small v-if="isOldWaterReading(station.measuredAt, now)" class="water-old">Oudere meting · meer dan 2 uur geleden</small>
-          <small v-if="station.status" class="water-quality">{{ station.status }}</small>
         </li>
       </ul>
       <div class="water-panel-footer"><a href="https://waterinfo.rws.nl/" target="_blank" rel="noopener noreferrer">Bron: Rijkswaterstaat ↗</a><button type="button" :disabled="loading" @click="load">{{ loading ? 'Laden…' : 'Vernieuwen' }}</button></div>
@@ -67,7 +66,6 @@ summary > span:first-child { color: var(--theme-water); font-size: 1.6rem; line-
 .water-stations strong { white-space: nowrap; font-weight: 700; font-size: .8rem; }
 .water-stations small { display: block; font-size: .65rem; color: var(--theme-muted); }
 .water-stations .water-old { color: #93451e; }
-.water-quality { margin-top: .15rem; }
 .water-panel-footer { display: flex; justify-content: space-between; gap: .5rem; margin: .75rem 0; font-size: .65rem; }
 a, .water-panel-footer button { color: var(--theme-ink); }
 .water-panel-footer button { border: 0; background: transparent; font: inherit; text-decoration: underline; cursor: pointer; }
