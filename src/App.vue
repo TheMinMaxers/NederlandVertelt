@@ -5,6 +5,8 @@ import 'leaflet/dist/leaflet.css'
 import { fetchGeodata, parsePoint } from './lib/sparql'
 import StreetView from './components/StreetView.vue'
 import WelcomeIntro from './components/WelcomeIntro.vue'
+import WaterLevels from './components/WaterLevels.vue'
+import { waterHeight, waterTime, isOldWaterReading } from './lib/waterLevels'
 import museumFilterImage from './assets/museum-filter.jpg'
 import LocationDetail from './components/LocationDetail.vue'
 import { imageUrls, thumbnail } from './lib/images'
@@ -16,6 +18,10 @@ const showIntro = ref(true)
 const loading = ref(false)
 const queryStatus = ref('Geodata laden…')
 const queryError = ref(false)
+let waterLayer
+let waterStations = []
+let waterVisible = true
+const waterMarkers = new Map()
 let dataLayer
 const filterDialog = ref(null)
 const selectedCategories = ref(['bridge', 'flood-control', 'museum'])
@@ -31,6 +37,40 @@ let requestController
 const selectedLocation = ref(null)
 const streetLocation = ref(null)
 const categoryImages = ref({ museum: museumFilterImage })
+
+function showWaterStations(stations = waterStations) {
+  waterStations = stations
+  waterLayer?.remove()
+  waterMarkers.clear()
+  if (!map || !waterVisible) return
+  waterLayer = L.layerGroup()
+  for (const station of stations) {
+    const popup = document.createElement('div')
+    const title = document.createElement('strong')
+    title.textContent = station.name
+    const value = document.createElement('p')
+    value.textContent = `${waterHeight(station.metersNAP)} · ${waterTime(station.measuredAt)}`
+    const note = document.createElement('p')
+    note.textContent = `${isOldWaterReading(station.measuredAt) ? 'Oudere meting · ' : ''}${station.status}. Bron: Rijkswaterstaat.`
+    popup.append(title, value, note)
+    const marker = L.marker(station.coordinates, {
+      icon: L.divIcon({ className: 'location-marker water-marker', html: '<span aria-hidden="true">≈</span>', iconSize: [24, 24], iconAnchor: [12, 12] }),
+      title: `Waterstand ${station.name}`, alt: `Waterstand ${station.name}`,
+    }).bindPopup(popup).addTo(waterLayer)
+    waterMarkers.set(station.code, marker)
+  }
+  waterLayer.addTo(map)
+}
+function selectWaterStation(station) {
+  waterVisible = true
+  showWaterStations()
+  map?.setView(station.coordinates, 13, { animate: false })
+  waterMarkers.get(station.code)?.openPopup()
+}
+function toggleWaterStations(visible) {
+  waterVisible = visible
+  showWaterStations()
+}
 
 function openLocation(row) {
   selectedLocation.value = row
@@ -218,6 +258,7 @@ onBeforeUnmount(() => {
     </dialog>
     <div class="map-stage">
       <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Zeeland"></div>
+      <WaterLevels @loaded="showWaterStations" @select="selectWaterStation" @toggle="toggleWaterStations" />
       <div class="map-location-control">
         <p :class="{ 'visually-hidden': !locating && !locationError, error: locationError }" role="status">{{ status }}</p>
         <button class="map-location-button" type="button" :disabled="locating" :aria-busy="locating" :title="locating ? 'Locatie bepalen…' : 'Vind mijn locatie'" @click="locate">

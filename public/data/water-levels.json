@@ -1,0 +1,51 @@
+{
+  "updatedAt": "2026-10-31T08:55:55.227Z",
+  "source": "Rijkswaterstaat Waterinfo",
+  "sourceUrl": "https://waterinfo.rws.nl/",
+  "stations": [
+    {
+      "code": "hansweert",
+      "name": "Hansweert",
+      "coordinates": [
+        51.44567,
+        3.99744
+      ],
+      "metersNAP": -0.15,
+      "measuredAt": "2026-10-31T09:30:00.000+01:00",
+      "status": "Ongecontroleerd"
+    },
+    {
+      "code": "terneuzen",
+      "name": "Terneuzen",
+      "coordinates": [
+        51.336212,
+        3.819812
+      ],
+      "metersNAP": -0.54,
+      "measuredAt": "2026-10-31T09:30:00.000+01:00",
+      "status": "Ongecontroleerd"
+    },
+    {
+      "code": "vlissingen",
+      "name": "Vlissingen",
+      "coordinates": [
+        51.442,
+        3.6
+      ],
+      "metersNAP": -0.94,
+      "measuredAt": "2026-10-31T09:30:00.000+01:00",
+      "status": "Ongecontroleerd"
+    },
+    {
+      "code": "zierikzee",
+      "name": "Zierikzee",
+      "coordinates": [
+        51.642159,
+        3.910813
+      ],
+      "metersNAP": 0.66,
+      "measuredAt": "1987-01-02T07:00:00.000+01:00",
+      "status": "Ongecontroleerd"
+    }
+  ]
+}
