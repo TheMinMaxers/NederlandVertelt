@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { fetchGeodata } from './lib/sparql'
+import StreetView from './components/StreetView.vue'
 import LocationDetail from './components/LocationDetail.vue'
-import { createMapPopup } from './lib/mapPopup'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
 
@@ -23,6 +23,7 @@ let loadedPoints = []
 let requestController
 
 const selectedLocation = ref(null)
+const streetLocation = ref(null)
 const categoryImages = ref({})
 
 function openLocation(row) {
@@ -73,7 +74,7 @@ function renderPoints(fit = false) {
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
     L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
-      .bindPopup(() => createMapPopup(row, () => openLocation(row)), { maxWidth: 300, minWidth: 220 })
+      .on('click', () => { streetLocation.value = { row, coordinates } })
       .bindTooltip(tooltip).addTo(nextLayer)
   }
   dataLayer?.remove()
@@ -198,6 +199,7 @@ onBeforeUnmount(() => {
         </button>
       </div>
     </div>
+    <StreetView v-if="streetLocation" :row="streetLocation.row" :coordinates="streetLocation.coordinates" @close="streetLocation = null" @read-more="openLocation" />
     <LocationDetail v-if="selectedLocation" :row="selectedLocation" :categories="categories" @close="selectedLocation = null" />
   </main>
 </template>

@@ -86,7 +86,7 @@ Wikidata classification, administrative-location and coordinate statements.
 
 ### Location detail view
 
-Click a map marker to open its full-page detail view. Close it with the return
+Click a map marker to open Google Street View; the overlay links to its full-page detail view. Close it with the return
 button or Escape; the map position and filters are preserved. All available
 P18 photos are returned by the query and displayed in a horizontally scrolling
 carousel with arrow buttons and keyboard navigation. A source link opens the
@@ -130,6 +130,23 @@ selected description. If neither source has text, an empty-state message appears
 
 The map fills the viewport below a compact grey title bar. Filters open in an
 80vw × 80dvh dialog with category photo cards and the GPS control. Clicking a
-marker opens an introduction bubble; **Lees hier meer over mij!** opens the full
-location page. The construction year comes from Wikidata P571 (inception), not
+marker opens Google Street View directly, with an introduction bubble layered
+on top; **Lees hier meer over mij!** opens the full location page. The construction year comes from Wikidata P571 (inception), not
 RCE's monument registration date. Missing construction dates are shown as unknown.
+
+### Google Street View in de app
+
+Klik op een kaartpunt om direct Google Street View binnen de app te openen.
+Er verschijnt geen voorafgaande kaartpop-up. De locatieballon staat boven het
+straatbeeld; **Lees hier meer over mij!** opent de detailpagina. Sluiten of
+Escape brengt je terug naar de kaart.
+
+Kopieer `.env.example` naar `.env.local`, vul `VITE_GOOGLE_MAPS_EMBED_API_KEY`
+in en herstart `npm run dev`. Activeer de **Maps Embed API** voor deze sleutel
+in Google Cloud. Sta de gebruikte localhost-origin en het productiedomein toe
+bij de HTTP-referrerbeperkingen. De sleutel is zichtbaar in de browser.
+Voor GitHub Actions wordt de gelijknamige repository-secret gebruikt.
+
+Zonder sleutel toont de app een configuratiemelding en blijft de
+locatie-informatie beschikbaar. De beschikbaarheid van opnames wordt door
+Google bepaald. Documentatie: https://developers.google.com/maps/documentation/embed/embedding-map
