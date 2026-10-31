@@ -6,8 +6,10 @@ PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?item ?itemLabel ?coord ?town ?townLabel
+       (GROUP_CONCAT(DISTINCT ?classLabel; separator=", ") AS ?className)
        (MIN(?inceptionDate) AS ?inception)
        (COALESCE(SAMPLE(?descriptionNl), SAMPLE(?descriptionEn)) AS ?itemDescription)
        (GROUP_CONCAT(DISTINCT STR(?itemImage); separator="|") AS ?images)
@@ -25,6 +27,12 @@ SELECT ?item ?itemLabel ?coord ?town ?townLabel
     ("flood-control" wd:Q2630707)
   }
   FILTER EXISTS { ?item wdt:P31/wdt:P279* ?class . }
+  OPTIONAL {
+    ?item wdt:P31 ?itemClass .
+    OPTIONAL { ?itemClass rdfs:label ?classNl . FILTER(LANG(?classNl) = "nl") }
+    OPTIONAL { ?itemClass rdfs:label ?classEn . FILTER(LANG(?classEn) = "en") }
+    BIND(COALESCE(?classNl, ?classEn) AS ?classLabel)
+  }
   OPTIONAL { ?item wdt:P276 ?town . }
   OPTIONAL { ?item wdt:P18 ?itemImage . }
   OPTIONAL { ?item wdt:P359 ?monumentNumber . }

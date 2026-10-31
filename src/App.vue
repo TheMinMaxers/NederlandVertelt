@@ -7,16 +7,18 @@ import StreetView from './components/StreetView.vue'
 import LocationDetail from './components/LocationDetail.vue'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
+import { collectieZeelandPoints, museumIconHtml } from './lib/collectieZeeland'
 
 const loading = ref(false)
 const queryStatus = ref('Geodata laden…')
 const queryError = ref(false)
 let dataLayer
 const filterDialog = ref(null)
-const selectedCategories = ref(['bridge', 'flood-control'])
+const selectedCategories = ref(['bridge', 'flood-control', 'museum'])
 const categories = [
   { id: 'bridge', label: 'Bruggen', color: '#b45309' },
   { id: 'flood-control', label: 'Waterkeringen', color: '#0369a1' },
+  { id: 'museum', label: 'Musea & collecties', color: '#7c3aed' },
 ]
 const visibleCount = ref(0)
 let loadedPoints = []
@@ -41,6 +43,8 @@ async function fetchPoints() {
   queryError.value = false
   loading.value = true
   queryStatus.value = 'Geodata ophalen…'
+  loadedPoints = collectieZeelandPoints()
+  renderPoints(true)
   const controller = new AbortController()
   requestController = controller
   try {
@@ -51,20 +55,20 @@ async function fetchPoints() {
       timeoutMs: 60000,
     })
     if (!map) return
-    loadedPoints = points
+    loadedPoints = [...collectieZeelandPoints(), ...points]
     for (const category of categories) {
       const point = points.find(({ row }) => (row.categories?.value || '').split(',').includes(category.id) && imageUrls(row).length)
       if (point) categoryImages.value[category.id] = thumbnail(imageUrls(point.row)[0], 600)
     }
     renderPoints(true)
-    queryStatus.value = `${points.length} locaties geladen.${skipped ? ` ${skipped} locaties zonder geldige coördinaten overgeslagen.` : ''}`
+    queryStatus.value = `${loadedPoints.length} locaties geladen.${skipped ? ` ${skipped} locaties zonder geldige coördinaten overgeslagen.` : ''}`
   } catch (error) {
     if (!map) return
     console.error('Could not load geodata:', error)
     queryError.value = true
-    queryStatus.value = error.name === 'AbortError'
+    queryStatus.value = `${loadedPoints.length} Collectie Zeeland-locaties beschikbaar. ` + (error.name === 'AbortError'
       ? 'Het laden van de locaties duurde te lang. Probeer opnieuw.'
-      : `Locaties konden niet worden geladen: ${error.message}`
+      : `Wikidata kon niet worden geladen: ${error.message}`)
   } finally {
     loading.value = false
     if (requestController === controller) requestController = null
@@ -79,8 +83,10 @@ function renderPoints(fit = false) {
     if (!matches.length) continue
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
-    L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
-      .on('click', () => { streetLocation.value = { row, coordinates } })
+    const marker = matches.includes('museum')
+      ? L.marker(coordinates, { icon: L.divIcon({ className: 'museum-marker', html: museumIconHtml, iconSize: [38, 38], iconAnchor: [19, 19] }), title: row.itemLabel?.value || 'Museum', alt: row.itemLabel?.value || 'Museum' })
+      : L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
+    marker.on('click', () => { streetLocation.value = { row, coordinates } })
       .bindTooltip(tooltip).addTo(nextLayer)
   }
   dataLayer?.remove()
@@ -167,7 +173,7 @@ onBeforeUnmount(() => {
     <header class="page-header map-topbar">
       <div class="map-topbar-copy">
         <h1 class="brand">Nederland<span>Vertelt.</span></h1>
-        <p>Ontdek de bruggen en waterkeringen van Zeeland. Klik op een punt en laat de plek vertellen.</p>
+        <p>Ontdek de bruggen, waterkeringen en musea van Zeeland. Klik op een punt en laat de plek vertellen.</p>
         <p v-if="loading || queryError" class="status" :class="{ error: queryError }" role="status">{{ queryStatus }} <button v-if="queryError" class="intro-read-more" type="button" @click="fetchPoints">Opnieuw laden</button></p>
       </div>
       <button class="location-button" type="button" aria-haspopup="dialog" @click="filterDialog.showModal()">☷ Filters <span class="filter-count">{{ selectedCategories.length }}</span></button>
@@ -182,6 +188,7 @@ onBeforeUnmount(() => {
         <legend class="visually-hidden">Categorieën</legend>
         <label v-for="category in categories" :key="category.id" class="category-card filter-image-card" :class="{ 'is-selected': selectedCategories.includes(category.id) }">
           <img v-if="categoryImages[category.id]" :src="categoryImages[category.id]" alt="" loading="lazy" @error="delete categoryImages[category.id]" />
+          <span v-if="category.id === 'museum'" class="museum-category-art" aria-hidden="true" v-html="museumIconHtml"></span>
           <span class="category-card-shade"></span>
           <span class="category-card-copy"><small>ONTDEK ZEELAND</small><strong>{{ category.label }}</strong></span>
           <input v-model="selectedCategories" type="checkbox" :value="category.id" :aria-label="category.label" />

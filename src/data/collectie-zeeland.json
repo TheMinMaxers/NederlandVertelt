@@ -1,0 +1,546 @@
+{
+  "updated": "2026-10-31T04:43:37.937715+00:00",
+  "source": "https://collectiezeeland.nl/wp-json/wp/v2/participant?per_page=100",
+  "catalog": "https://zoeken.collectiezeeland.nl/Atlantispubliek/data/set/catalog",
+  "geocoder": "https://api.pdok.nl/bzk/locatieserver/search/v3_1/free",
+  "skipped": [
+    "https://collectiezeeland.nl/participant/museumschooltijd/",
+    "https://collectiezeeland.nl/participant/het-vlaemsche-erfgoed/"
+  ],
+  "locations": [
+    {
+      "name": "Museum Oud Westdorpe",
+      "url": "https://collectiezeeland.nl/participant/museum-oud-westdorpe/",
+      "address": "Graafjansdijk A 190, 4554AM Westdorpe",
+      "town": "Westdorpe",
+      "coordinates": [
+        51.23409193,
+        3.82895789
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0715200000030800",
+      "objects": [
+        {
+          "title": "Jan Dellaert in Farman type 22",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=336938925"
+        },
+        {
+          "title": "Heiligenbeeldje Madonna met kind",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=336939408"
+        },
+        {
+          "title": "Emaille gevelschild Van Waes-Boodts bieren",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=336941648"
+        },
+        {
+          "title": "Windhaan van rooms-katholieke kerk te Westdorpe",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=336940205"
+        },
+        {
+          "title": "Naambord muziekvereniging Eikels Worden Boomen",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=336940389"
+        }
+      ]
+    },
+    {
+      "name": "Watersnoodmuseum",
+      "url": "https://collectiezeeland.nl/participant/watersnoodmuseum/",
+      "address": "Weg vd Buitenlandse Pers 5, 4305RJ Ouwerkerk",
+      "town": "Ouwerkerk",
+      "coordinates": [
+        51.61742265,
+        3.98282179
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/1676200000476101",
+      "objects": [
+        {
+          "title": "Herdenkingsbord 'Sluiting Ouwerkerk'",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322491552"
+        },
+        {
+          "title": "'De Verdronkenen'",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322918901"
+        },
+        {
+          "title": "Jas van Jan Maliepaard",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322504313"
+        },
+        {
+          "title": "3 stuks schoeisel gevonden in Japan",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327308307"
+        }
+      ]
+    },
+    {
+      "name": "Terra Maris",
+      "url": "https://collectiezeeland.nl/participant/terra-maris/",
+      "address": "Duinvlietweg 6, 4356ND Oostkapelle",
+      "town": "Oostkapelle",
+      "coordinates": [
+        51.56966704,
+        3.52000972
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0717200000117654",
+      "objects": [
+        {
+          "title": "Bontbekplevier (Opgezette vogels)",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321241130"
+        },
+        {
+          "title": "IJsvogel (Opgezette vogels)",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322903440"
+        },
+        {
+          "title": "Grijze Zeehond (Opgezette zoogdieren)",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323477034"
+        },
+        {
+          "title": "Wolharige Mammoet (Fossiel zoogdier)",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=325439612"
+        }
+      ]
+    },
+    {
+      "name": "Bevrijdingsmuseum Zeeland",
+      "url": "https://collectiezeeland.nl/participant/bevrijdingsmuseum/",
+      "address": "Coudorp 41, 4455AH Nieuwdorp",
+      "town": "Nieuwdorp",
+      "coordinates": [
+        51.46780939,
+        3.74401064
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0654200000117211",
+      "objects": [
+        {
+          "title": "Uniformjas (buitenmodel), Lt.Kol J.J. van Oort (Bataljon Zeeland)",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=326635741"
+        },
+        {
+          "title": "Postduifparachute met harnas en berichtenkoker",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=326628835"
+        },
+        {
+          "title": "Frans pistool Union, kaliber 7,65 mm, van luitenant Colin",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=326629150"
+        }
+      ]
+    },
+    {
+      "name": "Stoomtrein Goes-Borsele",
+      "url": "https://collectiezeeland.nl/participant/stoomtrein-goes-borsele/",
+      "address": "Albert Plesmanweg 23, 4462GC Goes",
+      "town": "Goes",
+      "coordinates": [
+        51.49732944,
+        3.87915831
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0664200000020945",
+      "objects": [
+        {
+          "title": "Personenrijtuig NS ABd 7216 \"Ovale ramen\"",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322929158"
+        },
+        {
+          "title": "Stoomlocomotief 4 - Ing. H.F. Enter",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322928613"
+        },
+        {
+          "title": "Goederenloods",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322919930"
+        },
+        {
+          "title": "Vertrekstaf / Spiegelei",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322925685"
+        }
+      ]
+    },
+    {
+      "name": "Maritiem Muzeeum Zeeland",
+      "url": "https://collectiezeeland.nl/participant/maritiem-muzeeum-zeeland/",
+      "address": "Nieuwendijk 11, 4381BV Vlissingen",
+      "town": "Vlissingen",
+      "coordinates": [
+        51.44134249,
+        3.57541003
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0718200000013892",
+      "objects": [
+        {
+          "title": "Portret van Anna van Gelder",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327420343"
+        },
+        {
+          "title": "Brieventas van Michiel de Ruyter",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327391642"
+        },
+        {
+          "title": "Model slavenschip D'Elisabet Galy",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327420278"
+        },
+        {
+          "title": "Houten houder (doosje) met drie knijpbrillen, twee losse lensglazen en enkele fragmenten van lensglazen",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327430245"
+        }
+      ]
+    },
+    {
+      "name": "OosterscheldeMuseum",
+      "url": "https://collectiezeeland.nl/participant/oosterscheldemuseum/",
+      "address": "Kerkplein 1, 4401ED Yerseke",
+      "town": "Yerseke",
+      "coordinates": [
+        51.4926595,
+        4.04972736
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0703200000016673",
+      "objects": [
+        {
+          "title": "Panorama foto Vaarzon-Morel",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323365990"
+        },
+        {
+          "title": "Stad Reimerswaal",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323346756"
+        },
+        {
+          "title": "Witgekalkte dakpannen",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323330953"
+        },
+        {
+          "title": "net",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323354162"
+        }
+      ]
+    },
+    {
+      "name": "Museum Cultuurforum Aardenburg",
+      "url": "https://collectiezeeland.nl/participant/museum-cultuurforum-aardenburg/",
+      "address": "Sint Bavostraat 3, 4527CJ Aardenburg",
+      "town": "Aardenburg",
+      "coordinates": [
+        51.27356073,
+        3.44874291
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/1714200000766273",
+      "objects": [
+        {
+          "title": "Mal van roodbakkend aardewerk voor het vormen van een terracotta duif",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327054857"
+        },
+        {
+          "title": "Fragment van hoog reliëf zandstenen beeld van Hercules",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327053152"
+        },
+        {
+          "title": "Zeer grote wrijfschaal van dikwandig aardewerk, mogelijk specifiek vervaardigd voor religieus gebruik: offerschaal?",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327054417"
+        },
+        {
+          "title": "Beeldje van jonge Bacchus als ornament van een meubel(?)",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327051340"
+        },
+        {
+          "title": "Fragment van een  bouwinscriptie vermoedelijk toe te wijzen aan keizer Commodus",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327051565"
+        },
+        {
+          "title": "Terra sigillata wrijfschaal - Dragendorff 43, Oostgallisch, product uit Rheinzabern met barbotineversiering op manchet",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327056462"
+        }
+      ]
+    },
+    {
+      "name": "Marie Tak van Poortvliet Museum",
+      "url": "https://collectiezeeland.nl/participant/marietakvanpoortvlietmuseum/",
+      "address": "Ooststraat 10A, 4357BE Domburg",
+      "town": "Domburg",
+      "coordinates": [
+        51.56339873,
+        3.498273
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0717200000123991",
+      "objects": [
+        {
+          "title": "Bevroren Zee",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327317863"
+        },
+        {
+          "title": "Domburgse kantwerkster",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=326154612"
+        },
+        {
+          "title": "Bild [Landschap met boom]",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=326162769"
+        },
+        {
+          "title": "Duinlandschap",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=326163151"
+        }
+      ]
+    },
+    {
+      "name": "Industrieel Museum Zeeland",
+      "url": "https://collectiezeeland.nl/participant/industrieel-museum-zeeland/",
+      "address": "Westkade 114, 4551LA Sas van Gent",
+      "town": "Sas van Gent",
+      "coordinates": [
+        51.23121797,
+        3.80080932
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0715200000037186",
+      "objects": [
+        {
+          "title": "Gasverbruik meter met muntautomaat",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321965155"
+        },
+        {
+          "title": "Kromhout M2",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321972695"
+        },
+        {
+          "title": "Centraalpost telefoon automaat",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321967840"
+        },
+        {
+          "title": "Vrachtauto CMP",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321973103"
+        }
+      ]
+    },
+    {
+      "name": "Museum Hulst ‘s-Landshuis",
+      "url": "https://collectiezeeland.nl/participant/museum-hulst/",
+      "address": "Steenstraat 37, 4561AR Hulst",
+      "town": "Hulst",
+      "coordinates": [
+        51.28127897,
+        4.05166524
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0677200000640531",
+      "objects": [
+        {
+          "title": "schilderij Mozes en de wetstafelen of de Gerechtigheid",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=324093288"
+        },
+        {
+          "title": "Rij klanten voor de winkel. Cola. Por pan en la guerra.",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327301515"
+        },
+        {
+          "title": "helm, type Cabasset",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=324082365"
+        },
+        {
+          "title": "Hulster vrouwendracht",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=324016394"
+        }
+      ]
+    },
+    {
+      "name": "Het Polderhuis Westkapelle",
+      "url": "https://collectiezeeland.nl/participant/polderhuis-westkapelle/",
+      "address": "Zuidstraat 154, 4361AK Westkapelle",
+      "town": "Westkapelle",
+      "coordinates": [
+        51.52713871,
+        3.43570794
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0717200000129377",
+      "objects": [
+        {
+          "title": "Fotocamera Neeltje Flipse-Roelse",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322740022"
+        },
+        {
+          "title": "Interieur noodwoning",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327316561"
+        },
+        {
+          "title": "Scheepstelegraaf landingsboot",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327316587"
+        }
+      ]
+    },
+    {
+      "name": "Historische Scheepswerf C.A. Meerman",
+      "url": "https://collectiezeeland.nl/participant/scheepswerfmeerman/",
+      "address": "Zuidwal 63, 4341CH Arnemuiden",
+      "town": "Arnemuiden",
+      "coordinates": [
+        51.49917332,
+        3.67221562
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0687200000024225",
+      "objects": []
+    },
+    {
+      "name": "Visserijmuseum Breskens",
+      "url": "https://collectiezeeland.nl/participant/visserijmuseum-breskens/",
+      "address": "Keerdam 13, 4511DE Breskens",
+      "town": "Breskens",
+      "coordinates": [
+        51.39623572,
+        3.56237863
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/1714200000833797",
+      "objects": [
+        {
+          "title": "Schilderij BR 43",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322444114"
+        },
+        {
+          "title": "Anonieme visser III",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322408958"
+        },
+        {
+          "title": "Schaalmodel BR1 (Breskens 1)",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322399091"
+        }
+      ]
+    },
+    {
+      "name": "Museum Veere",
+      "url": "https://collectiezeeland.nl/participant/museum-veere/",
+      "address": "Kaai 25, 4351AA Veere",
+      "town": "Veere",
+      "coordinates": [
+        51.54944423,
+        3.66802945
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0717200000120179",
+      "objects": [
+        {
+          "title": "Het stoepmeisje van de Schotse Huizen",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323904544"
+        },
+        {
+          "title": "Krabbelaar of mol",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323790728"
+        },
+        {
+          "title": "Hemdrok kamizool Zuid-Beveland",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=323839958"
+        },
+        {
+          "title": "De beker van Maximiliaan",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327464353"
+        }
+      ]
+    },
+    {
+      "name": "Museum De Meestoof",
+      "url": "https://collectiezeeland.nl/participant/museum-de-meestoof/",
+      "address": "Bierensstraat 6, 4697GE Sint-Annaland",
+      "town": "Sint-Annaland",
+      "coordinates": [
+        51.60072497,
+        4.10083955
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0716200000753130",
+      "objects": [
+        {
+          "title": "Pot met deksel",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322167671"
+        },
+        {
+          "title": "Zelfportret van Marie Slager:\"De lederbewerkster\"",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=322140645"
+        },
+        {
+          "title": "Noorse geschenkwoning, inrichting",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327310939"
+        },
+        {
+          "title": "Smederij inrichting",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327310942"
+        }
+      ]
+    },
+    {
+      "name": "Museum Scheldewerf",
+      "url": "https://collectiezeeland.nl/participant/museum-scheldewerf/",
+      "address": "De Willem Ruysstraat 100, 4381NK Vlissingen",
+      "town": "Vlissingen",
+      "coordinates": [
+        51.44627223,
+        3.57783106
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0718200000027674",
+      "objects": [
+        {
+          "title": "Telefooncentrale Telemaster",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=324345233"
+        },
+        {
+          "title": "Ideeënbus",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=325413134"
+        },
+        {
+          "title": "Scheldepoort 3 schip",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327123417"
+        },
+        {
+          "title": "Voor verlichting lamp loc. willy",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327379408"
+        }
+      ]
+    },
+    {
+      "name": "Museum Het Bolwerk",
+      "url": "https://collectiezeeland.nl/participant/museum-het-bolwerk/",
+      "address": "Markt 28, 4515BB IJzendijke",
+      "town": "IJzendijke",
+      "coordinates": [
+        51.32248628,
+        3.61581191
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/1714200000757983",
+      "objects": [
+        {
+          "title": "Tegel met ridder te paard",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321070191"
+        },
+        {
+          "title": "schilderij vestingstad Isendyck",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321070527"
+        },
+        {
+          "title": "Stormhoed zonder vizier",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=321071464"
+        },
+        {
+          "title": "kaart West-Zeeuws-Vlaanderen",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=325181362"
+        }
+      ]
+    },
+    {
+      "name": "Museum Het Warenhuis",
+      "url": "https://collectiezeeland.nl/participant/museum-het-warenhuis/",
+      "address": "Markt 2, 4571BG Axel",
+      "town": "Axel",
+      "coordinates": [
+        51.2652618,
+        3.90884245
+      ],
+      "addressSource": "http://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/0715200000037254",
+      "objects": [
+        {
+          "title": "Pauw, muurschildering, olieverf op stucwerk.  Ca 1909-1917",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327379474"
+        },
+        {
+          "title": "Scheepsbel Hr. Ms. Mijnenveger Axel, M 808, inclusief naambord",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327379477"
+        },
+        {
+          "title": "Beeldhouwwerk aan speelwagen ca 1880",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327379470"
+        },
+        {
+          "title": "Axelse Mona Lisa",
+          "url": "https://zoeken.collectiezeeland.nl/detail.php?id=327379462"
+        }
+      ]
+    }
+  ]
+}

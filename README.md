@@ -150,3 +150,28 @@ Voor GitHub Actions wordt de gelijknamige repository-secret gebruikt.
 Zonder sleutel toont de app een configuratiemelding en blijft de
 locatie-informatie beschikbaar. De beschikbaarheid van opnames wordt door
 Google bepaald. Documentatie: https://developers.google.com/maps/documentation/embed/embedding-map
+
+### Collectie Zeeland: musea en collecties
+
+De filter **Musea & collecties** toont instellingen met een paars museumicoon.
+De catalogus op https://zoeken.collectiezeeland.nl/Atlantispubliek/data/set/catalog
+publiceert JSON-LD voor museumobjecten, maar vermeldt geen SPARQL-endpoint.
+De objecten bevatten geen huidige locatiecoördinaten. Plaatsen van vervaardiging
+worden daarom niet als object- of museumlocatie gebruikt.
+
+De kaart gebruikt een compacte JSON-snapshot van de openbare deelnemers-API
+(`https://collectiezeeland.nl/wp-json/wp/v2/participant?per_page=100`). Bezoekadressen
+worden gecontroleerd via de PDOK Locatieserver (BAG); alleen een unieke match op
+postcode, huisnummer en huisletter wordt opgenomen. De detailpagina verwijst
+naar de instelling en haar gepubliceerde selectie collectieobjecten. Dit is geen
+claim dat ieder object op het bezoekadres te zien is. Bibliotheek, ondersteunende
+organisaties en de zeilstichting vallen buiten deze museumlaag.
+
+Ververs de snapshot met `python3 scripts/update-collectie-zeeland.py` (internet
+nodig, geen API-key). De gegenereerde `src/data/collectie-zeeland.json` bevat de
+bronnen, actualisatiedatum en overgeslagen adressen. Momenteel zijn 19 instellingen
+en 72 objectlinks opgenomen; Museum Schooltijd en Het Vlaemsche Erfgoed zijn
+wegens een ontbrekende/eenduidige BAG-match overgeslagen. Controleer overgeslagen
+adressen bij de bron vóór handmatige toevoeging. Bezoekers downloaden niet de
+volledige objectcatalogus van circa 30 MB. De museumlaag werkt ook als Wikidata
+niet bereikbaar is; de bestaande Street View- en navigatiefuncties blijven gelden.

@@ -10,7 +10,7 @@ export function createMapPopup(row, onReadMore) {
   const title = document.createElement('strong')
   title.textContent = row.itemLabel?.value || 'een bijzondere plek'
   const year = constructionYear(row.inception?.value)
-  greeting.append('Hoi! Ik ben ', title, year ? `, gebouwd in ${year}.` : '. Mijn bouwjaar is nog onbekend.')
+  greeting.append('Hoi! Ik ben ', title, row.source?.value === 'Collectie Zeeland' ? '. Ontdek mijn collectie!' : year ? `, gebouwd in ${year}.` : '. Mijn bouwjaar is nog onbekend.')
   const more = document.createElement('button')
   more.type = 'button'
   more.className = 'intro-read-more'
