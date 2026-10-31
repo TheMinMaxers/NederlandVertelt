@@ -72,3 +72,25 @@ repository-secret `VITE_GOOGLE_MAPS_EMBED_API_KEY` voor Street View.
 De productie-URL is https://theminmaxers.github.io/NederlandVertelt/.
 De workflow gebruikt `/NederlandVertelt/` als basispad; lokaal is dit `/`.
 Controleer de Pages-build lokaal met `GITHUB_ACTIONS=true npm run build`.
+
+## Waterstanden (Rijkswaterstaat)
+
+Het uitklapbare paneel **Waterstanden** toont metingen van Vlissingen, Terneuzen,
+Hansweert en Zierikzee. Klik op een station om in te zoomen en de meetwaarde op
+de kaart te bekijken. De laag kan apart worden verborgen. Waarden zijn meters
+ten opzichte van NAP, geen waterdiepte of meting bij een monument. Meetmoment,
+bron en controlestatus blijven zichtbaar; metingen ouder dan twee uur worden
+als oud gemarkeerd.
+
+De browser leest `public/data/water-levels.json` vanaf dezelfde site, omdat de
+RWS-service geen CORS-toegang voor GitHub Pages biedt. De Pages-workflow haalt
+bij iedere deployment en om het halfuur (minuten 17 en 47) nieuwe JSON op met
+`node scripts/update-water-levels.mjs`. Daarvoor is geen API-key nodig. Alleen
+geldige daadwerkelijke NAP-metingen worden verwerkt; voorspellingen en
+ontbrekende meetwaarden worden uitgesloten. Bij storingen blijft de nieuwste
+beschikbare volledige snapshot behouden, inclusief de oorspronkelijke tijden.
+
+De app controleert om de vijf minuten op een nieuwe snapshot. GitHub Actions
+kan geplande runs vertragen; dit is geen realtime waterberichtendienst.
+De planning wordt actief zodra de workflow op de standaardbranch staat.
+Voor lokale actualisatie: `node scripts/update-water-levels.mjs`.

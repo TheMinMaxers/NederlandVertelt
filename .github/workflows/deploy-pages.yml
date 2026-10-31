@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '17,47 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -32,6 +34,8 @@ jobs:
         run: npm ci
       - name: Test
         run: node --test src/lib/*.test.js
+      - name: Refresh water levels
+        run: node scripts/update-water-levels.mjs
       - name: Build
         run: npm run build
         env:
