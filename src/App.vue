@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css'
 import { fetchGeodata, parsePoint } from './lib/sparql'
 import StreetView from './components/StreetView.vue'
 import WelcomeIntro from './components/WelcomeIntro.vue'
-import SeaWaves from './components/SeaWaves.vue'
+import museumFilterImage from './assets/museum-filter.svg'
 import LocationDetail from './components/LocationDetail.vue'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
@@ -30,7 +30,7 @@ let requestController
 
 const selectedLocation = ref(null)
 const streetLocation = ref(null)
-const categoryImages = ref({})
+const categoryImages = ref({ museum: museumFilterImage })
 
 function openLocation(row) {
   selectedLocation.value = row
@@ -186,12 +186,11 @@ onBeforeUnmount(() => {
   <main class="map-page map-experience">
     <header class="page-header map-topbar">
       <div class="map-topbar-copy">
-        <h1 class="brand">Nederland<span>Vertelt.</span></h1>
+        <h1 class="brand">Zeeland<span>Vertelt.</span></h1>
         <p>Ontdek de bruggen, waterkeringen en musea van Zeeland. Klik op een punt en laat de plek vertellen.</p>
         <p v-if="loading || queryError" class="status" :class="{ error: queryError }" role="status">{{ queryStatus }} <button v-if="queryError" class="intro-read-more" type="button" @click="fetchPoints">Opnieuw laden</button></p>
       </div>
       <button class="location-button" type="button" aria-haspopup="dialog" @click="filterDialog.showModal()">☷ Filters <span class="filter-count">{{ selectedCategories.length }}</span></button>
-      <SeaWaves />
     </header>
     <dialog ref="filterDialog" class="filter-dialog map-filter-dialog" aria-labelledby="filter-title" @click="event => { if (event.target === filterDialog) filterDialog.close() }">
       <div class="filter-dialog-heading">
@@ -203,7 +202,6 @@ onBeforeUnmount(() => {
         <legend class="visually-hidden">Categorieën</legend>
         <label v-for="category in categories" :key="category.id" class="category-card filter-image-card" :class="{ 'is-selected': selectedCategories.includes(category.id) }">
           <img v-if="categoryImages[category.id]" :src="categoryImages[category.id]" alt="" loading="lazy" @error="delete categoryImages[category.id]" />
-          <span v-if="category.id === 'museum'" class="museum-category-art" aria-hidden="true" v-html="categoryIcons.museum"></span>
           <span class="category-card-shade"></span>
           <span class="category-card-copy"><small>ONTDEK ZEELAND</small><strong>{{ category.label }}</strong></span>
           <input v-model="selectedCategories" type="checkbox" :value="category.id" :aria-label="category.label" />

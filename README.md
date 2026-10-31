@@ -1,4 +1,4 @@
-# NederlandVertelt
+# ZeelandVertelt
 
 Een kaart van bruggen, waterkeringen en musea in Zeeland, met GPS, Google
 Street View en informatie uit Wikidata, RCE en Collectie Zeeland.
