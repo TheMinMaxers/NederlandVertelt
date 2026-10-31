@@ -233,6 +233,11 @@ onBeforeUnmount(() => {
       <div class="map-topbar-copy">
         <h1 class="brand">Zeeland<span>Vertelt.</span></h1>
         <p>Ontdek de bruggen, waterkeringen en musea van Zeeland. Klik op een punt en laat de plek vertellen.</p>
+        <div class="flood-history-info">
+          <span class="flood-history-icon" aria-hidden="true">≈</span>
+          <span>Watersnoodramp 1953 · Vlissingen</span>
+          <strong>+4,55 m NAP</strong>
+        </div>
         <p v-if="loading || queryError" class="status" :class="{ error: queryError }" role="status">{{ queryStatus }} <button v-if="queryError" class="intro-read-more" type="button" @click="fetchPoints">Opnieuw laden</button></p>
       </div>
       <button class="location-button" type="button" aria-haspopup="dialog" @click="filterDialog.showModal()">☷ Filters <span class="filter-count">{{ selectedCategories.length }}</span></button>

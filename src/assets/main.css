@@ -381,3 +381,8 @@ iframe.street-panorama { position: absolute; inset: 0; width: 100%; height: 100%
 }
 
 .water-marker { --marker-color: #207e8b; font-size: 22px; line-height: 1; font-weight: 700; }
+
+.flood-history-info { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem .65rem; width: fit-content; margin-top: .65rem; padding: .4rem .75rem; border: 1px solid #ac573b30; border-radius: .65rem; background: #ac573b0c; color: var(--theme-ink); font-size: .75rem; }
+.flood-history-icon { font-size: 1.35rem; line-height: 1; color: var(--theme-rust); }
+.flood-history-info strong { color: var(--theme-rust); font-weight: 700; white-space: nowrap; }
+@media (max-width: 650px) { .flood-history-info { font-size: .65rem; gap: .25rem .4rem; padding: .4rem .55rem; } }
