@@ -27,5 +27,3 @@ export function collectieZeelandPoints(data = dataset) {
     },
   }))
 }
-
-export const museumIconHtml = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m3 9 9-6 9 6H3Zm2 11h14M7 11v6m5-6v6m5-6v6M3 22h18"/></svg>'
