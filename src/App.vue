@@ -7,16 +7,19 @@ import StreetView from './components/StreetView.vue'
 import LocationDetail from './components/LocationDetail.vue'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
+import { collectieZeelandPoints } from './lib/collectieZeeland'
+import { categoryIcons, markerSize, spreadMarkers } from './lib/mapMarkers'
 
 const loading = ref(false)
 const queryStatus = ref('Geodata laden…')
 const queryError = ref(false)
 let dataLayer
 const filterDialog = ref(null)
-const selectedCategories = ref(['bridge', 'flood-control'])
+const selectedCategories = ref(['bridge', 'flood-control', 'museum'])
 const categories = [
   { id: 'bridge', label: 'Bruggen', color: '#b45309' },
   { id: 'flood-control', label: 'Waterkeringen', color: '#0369a1' },
+  { id: 'museum', label: 'Musea & collecties', color: '#7c3aed' },
 ]
 const visibleCount = ref(0)
 let loadedPoints = []
@@ -41,6 +44,8 @@ async function fetchPoints() {
   queryError.value = false
   loading.value = true
   queryStatus.value = 'Geodata ophalen…'
+  loadedPoints = collectieZeelandPoints()
+  renderPoints(true)
   const controller = new AbortController()
   requestController = controller
   try {
@@ -51,20 +56,20 @@ async function fetchPoints() {
       timeoutMs: 60000,
     })
     if (!map) return
-    loadedPoints = points
+    loadedPoints = [...collectieZeelandPoints(), ...points]
     for (const category of categories) {
       const point = points.find(({ row }) => (row.categories?.value || '').split(',').includes(category.id) && imageUrls(row).length)
       if (point) categoryImages.value[category.id] = thumbnail(imageUrls(point.row)[0], 600)
     }
     renderPoints(true)
-    queryStatus.value = `${points.length} locaties geladen.${skipped ? ` ${skipped} locaties zonder geldige coördinaten overgeslagen.` : ''}`
+    queryStatus.value = `${loadedPoints.length} locaties geladen.${skipped ? ` ${skipped} locaties zonder geldige coördinaten overgeslagen.` : ''}`
   } catch (error) {
     if (!map) return
     console.error('Could not load geodata:', error)
     queryError.value = true
-    queryStatus.value = error.name === 'AbortError'
+    queryStatus.value = `${loadedPoints.length} Collectie Zeeland-locaties beschikbaar. ` + (error.name === 'AbortError'
       ? 'Het laden van de locaties duurde te lang. Probeer opnieuw.'
-      : `Locaties konden niet worden geladen: ${error.message}`
+      : `Wikidata kon niet worden geladen: ${error.message}`)
   } finally {
     loading.value = false
     if (requestController === controller) requestController = null
@@ -73,20 +78,32 @@ async function fetchPoints() {
 
 function renderPoints(fit = false) {
   if (!map) return
+  const points = loadedPoints.flatMap(point => {
+    const category = categories.find(category => selectedCategories.value.includes(category.id) && (point.row.categories?.value || '').split(',').includes(category.id))
+    return category ? [{ ...point, category }] : []
+  })
+  if (fit && points.length && !position && !locating.value) map.fitBounds(L.latLngBounds(points.map(point => point.coordinates)), { padding: [48, 48], maxZoom: 15 })
+  const positions = spreadMarkers(points.map(point => map.latLngToLayerPoint(point.coordinates)))
   const nextLayer = L.featureGroup()
-  for (const { coordinates, row } of loadedPoints) {
-    const matches = (row.categories?.value || '').split(',').filter(category => selectedCategories.value.includes(category))
-    if (!matches.length) continue
+  points.forEach(({ coordinates, row, category }, index) => {
+    const layout = positions[index]
+    const displayedCoordinates = map.layerPointToLatLng([layout.x, layout.y])
+    if (layout.moved) {
+      L.polyline([coordinates, displayedCoordinates], { color: category.color, weight: 2, opacity: 0.5, interactive: false }).addTo(nextLayer)
+      L.circleMarker(coordinates, { radius: 3, color: '#fff', weight: 1, fillColor: category.color, fillOpacity: 1, interactive: false }).addTo(nextLayer)
+    }
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
-    L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
-      .on('click', () => { streetLocation.value = { row, coordinates } })
+    L.marker(displayedCoordinates, {
+      icon: L.divIcon({ className: `location-marker marker-${category.id}`, html: categoryIcons[category.id], iconSize: [markerSize, markerSize], iconAnchor: [markerSize / 2, markerSize / 2] }),
+      title: row.itemLabel?.value || category.label,
+      alt: row.itemLabel?.value || category.label,
+    }).on('click', () => { streetLocation.value = { row, coordinates } })
       .bindTooltip(tooltip).addTo(nextLayer)
-  }
+  })
   dataLayer?.remove()
   dataLayer = nextLayer.addTo(map)
-  visibleCount.value = dataLayer.getLayers().length
-  if (fit && visibleCount.value) map.fitBounds(dataLayer.getBounds(), { padding: [32, 32], maxZoom: 15 })
+  visibleCount.value = points.length
 }
 
 watch(selectedCategories, () => renderPoints())
@@ -115,6 +132,7 @@ function locate() {
 
 onMounted(() => {
   map = L.map(mapElement.value).setView([52.1326, 5.2913], 7)
+  map.on('zoomend moveend', () => renderPoints())
   resizeObserver = new ResizeObserver(() => {
     cancelAnimationFrame(resizeFrame)
     resizeFrame = requestAnimationFrame(() => map?.invalidateSize({ pan: false }))
@@ -124,8 +142,6 @@ onMounted(() => {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map)
-
-  fetchPoints()
 
   map.on('locationfound', ({ latlng, accuracy }) => {
     locating.value = false
@@ -149,7 +165,11 @@ onMounted(() => {
       2: 'Je locatie kon niet worden bepaald. Controleer of locatievoorzieningen aanstaan.',
       3: 'Het bepalen van je locatie duurde te lang. Probeer opnieuw.',
     }[code] || 'Je locatie is niet beschikbaar. Probeer opnieuw.'
+    if (!position) renderPoints(true)
   })
+
+  locate()
+  fetchPoints()
 })
 
 onBeforeUnmount(() => {
@@ -167,7 +187,7 @@ onBeforeUnmount(() => {
     <header class="page-header map-topbar">
       <div class="map-topbar-copy">
         <h1 class="brand">Nederland<span>Vertelt.</span></h1>
-        <p>Ontdek de bruggen en waterkeringen van Zeeland. Klik op een punt en laat de plek vertellen.</p>
+        <p>Ontdek de bruggen, waterkeringen en musea van Zeeland. Klik op een punt en laat de plek vertellen.</p>
         <p v-if="loading || queryError" class="status" :class="{ error: queryError }" role="status">{{ queryStatus }} <button v-if="queryError" class="intro-read-more" type="button" @click="fetchPoints">Opnieuw laden</button></p>
       </div>
       <button class="location-button" type="button" aria-haspopup="dialog" @click="filterDialog.showModal()">☷ Filters <span class="filter-count">{{ selectedCategories.length }}</span></button>
@@ -182,6 +202,7 @@ onBeforeUnmount(() => {
         <legend class="visually-hidden">Categorieën</legend>
         <label v-for="category in categories" :key="category.id" class="category-card filter-image-card" :class="{ 'is-selected': selectedCategories.includes(category.id) }">
           <img v-if="categoryImages[category.id]" :src="categoryImages[category.id]" alt="" loading="lazy" @error="delete categoryImages[category.id]" />
+          <span v-if="category.id === 'museum'" class="museum-category-art" aria-hidden="true" v-html="categoryIcons.museum"></span>
           <span class="category-card-shade"></span>
           <span class="category-card-copy"><small>ONTDEK ZEELAND</small><strong>{{ category.label }}</strong></span>
           <input v-model="selectedCategories" type="checkbox" :value="category.id" :aria-label="category.label" />

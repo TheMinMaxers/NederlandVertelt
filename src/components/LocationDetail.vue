@@ -64,11 +64,13 @@ onBeforeUnmount(() => heritageController.abort())
         <p class="eyebrow">ZEELAND · EEN PLEK OM TE ONTDEKKEN</p>
         <div class="detail-tags"><span v-for="category in labels" :key="category.id" class="tag">{{ category.label }}</span></div>
         <h1 id="detail-title"><a v-if="safeUrl(row.item?.value)" :href="safeUrl(row.item.value)" target="_blank" rel="noopener noreferrer">{{ name }} <span class="external-arrow">↗</span></a><template v-else>{{ name }}</template></h1>
+        <p v-if="row.className?.value" class="detail-town">{{ row.source?.value ? 'Type locatie' : 'Type bouwwerk' }}: {{ row.className.value }}</p>
         <p v-if="constructionYear(row.inception?.value)" class="detail-town">Gebouwd in {{ constructionYear(row.inception.value) }} · Bron: Wikidata</p>
         <p v-if="row.aliasesNl?.value" class="detail-aliases">Ook bekend als: {{ row.aliasesNl.value }}</p>
         <p v-if="row.townLabel?.value || row.town?.value" class="detail-town">Stad: <a v-if="safeUrl(row.town?.value)" :href="safeUrl(row.town.value)" target="_blank" rel="noopener noreferrer">{{ row.townLabel?.value || row.town.value }} ↗</a><span v-else>{{ row.townLabel.value }}</span></p>
+        <p v-if="row.address?.value" class="detail-town">Adres: {{ row.address.value }} <a v-if="safeUrl(row.addressSource?.value)" :href="safeUrl(row.addressSource.value)" target="_blank" rel="noopener noreferrer">Bron: BAG ↗</a></p>
       </div>
-      <section class="gallery" aria-label="Foto’s van de locatie">
+      <section v-if="!row.source?.value || images.length" class="gallery" aria-label="Foto’s van de locatie">
         <div v-if="images.length" ref="carousel" class="image-carousel" tabindex="0" aria-label="Fotocarrousel, gebruik de pijltjestoetsen om te scrollen" @scroll.passive="updateSlide" @keydown.left.prevent="move(-1)" @keydown.right.prevent="move(1)">
           <figure v-for="(url, index) in images" :key="url" class="image-slide">
             <a :href="url" target="_blank" rel="noopener noreferrer" :aria-label="`Open foto ${index + 1} van ${name}`"><img :src="thumbnail(url)" :alt="`${name} — foto ${index + 1}`" :loading="index ? 'lazy' : 'eager'" @error="failed.push(url)" /></a>
@@ -85,7 +87,7 @@ onBeforeUnmount(() => heritageController.abort())
         </div>
       </section>
       <section class="heritage-section" aria-labelledby="heritage-title">
-        <p class="eyebrow">{{ description?.source === 'RCE' ? 'RIJKSDIENST VOOR HET CULTUREEL ERFGOED' : 'WIKIDATA' }}</p>
+        <p class="eyebrow">{{ description?.source === 'RCE' ? 'RIJKSDIENST VOOR HET CULTUREEL ERFGOED' : (row.source?.value || 'WIKIDATA') }}</p>
         <h2 id="heritage-title">Het verhaal van deze plek</h2>
         <p v-if="description" class="heritage-description">{{ description.text }}</p>
         <p v-else-if="!heritageLoading">Er is nog geen omschrijving beschikbaar voor deze locatie.</p>
@@ -98,6 +100,12 @@ onBeforeUnmount(() => heritageController.abort())
             <div v-if="record.functie?.value"><dt>Oorspronkelijke functie</dt><dd>{{ record.functie.value }}</dd></div>
           </dl>
         </article>
+      </section>
+      <section v-if="row.source?.value" class="heritage-section" aria-labelledby="collection-title">
+        <h2 id="collection-title">Ontdek de collectie</h2>
+        <p>Objecten uit de selectie van de instelling. Beschikbaarheid en locatie vind je bij de bron.</p>
+        <ul class="collection-links"><li v-for="item in row.collectionItems || []" :key="item.url"><a v-if="safeUrl(item.url)" :href="safeUrl(item.url)" target="_blank" rel="noopener noreferrer">{{ item.title }} ↗</a></li></ul>
+        <a :href="safeUrl(row.item?.value)" target="_blank" rel="noopener noreferrer">Bekijk {{ name }} op Collectie Zeeland ↗</a>
       </section>
       <footer class="detail-bottom"><p>Elke plek heeft een verhaal.<br><strong>Ontdek het volgende op de kaart.</strong></p><button class="location-button" type="button" @click="dialog.close()">Verder ontdekken ↗</button></footer>
     </article>

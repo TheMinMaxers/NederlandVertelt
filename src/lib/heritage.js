@@ -7,7 +7,7 @@ export function preferredDescription(row, records = []) {
   const descriptions = [...new Set(records.map(record => record.omschrijving?.value?.trim()).filter(Boolean))]
   if (descriptions.length) return { text: descriptions.join('\n\n'), source: 'RCE' }
   const fallback = row.itemDescription?.value?.trim()
-  return fallback ? { text: fallback, source: 'Wikidata' } : null
+  return fallback ? { text: fallback, source: row.source?.value || 'Wikidata' } : null
 }
 
 export function monumentNumbers(row) {
