@@ -1,4 +1,4 @@
-# NederlandVertelt
+# ZeelandVertelt
 
 Een kaart van bruggen, waterkeringen en musea in Zeeland, met GPS, Google
 Street View en informatie uit Wikidata, RCE en Collectie Zeeland.
@@ -22,7 +22,7 @@ Herstart Vite na aanpassing. Deze browsersleutel is zichtbaar in de client.
 De app zoekt bij het openen je GPS-locatie, na toestemming van de browser.
 De locatieknop kan opnieuw zoeken. Filters tonen bruggen, waterkeringen en
 musea/collecties. Iconen zijn 24 × 24 pixels; overlappende iconen worden gespreid
-zonder verbindingslijnen. Street View en navigatie
+met subtiele verbindingslijnen (20% dekking) naar de echte locatie. Street View en navigatie
 gebruiken de oorspronkelijke coördinaten.
 
 `src/lib/geodata.js` bevat de Wikidata-SPARQL-query voor Zeeland. Alleen items

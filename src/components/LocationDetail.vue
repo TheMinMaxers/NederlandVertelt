@@ -1,5 +1,4 @@
 <script setup>
-import SeaWaves from './SeaWaves.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { locationYear } from '../lib/mapPopup'
 import { imageSource, imageUrls, safeUrl, thumbnail } from '../lib/images'
@@ -55,12 +54,11 @@ onBeforeUnmount(() => heritageController.abort())
 <template>
   <dialog ref="dialog" class="detail-dialog" aria-labelledby="detail-title" @close="emit('close')">
     <header class="detail-topbar">
-      <span class="brand">Nederland<span>Vertelt.</span></span>
+      <span class="brand">Zeeland<span>Vertelt.</span></span>
       <nav class="detail-back-actions" aria-label="Terug naar kaart of straatbeeld">
         <button class="back-button" type="button" @click="returnToStreetView">← Terug naar Street View</button>
         <button class="back-button" type="button" autofocus @click="dialog.close()">← Terug naar de kaart <span aria-hidden="true">×</span></button>
       </nav>
-      <SeaWaves />
     </header>
     <article class="detail-content">
       <div class="detail-heading">

@@ -21,7 +21,7 @@ onMounted(() => dialog.value.showModal())
     <header class="welcome-top"><span class="welcome-maker">theminmaxers</span><span class="welcome-edition">VERHALEN VAN ZEELAND</span></header>
     <div class="welcome-copy">
       <p class="welcome-kicker"><span></span> ELKE PLEK HEEFT EEN VERHAAL</p>
-      <h1 id="welcome-title">Nederland<span>Vertelt.</span></h1>
+      <h1 id="welcome-title">Zeeland<span>Vertelt.</span></h1>
       <p class="welcome-description">Waar het water het land ontmoet,<br />komen de verhalen tot leven.</p>
       <button class="welcome-enter" type="button" autofocus @click="emit('enter')">Ontdek Zeeland <span aria-hidden="true">↗</span></button>
     </div>

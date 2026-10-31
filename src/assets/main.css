@@ -327,8 +327,6 @@ iframe.street-panorama { position: absolute; inset: 0; width: 100%; height: 100%
   box-shadow: 0 3px 12px #29154655;
 }
 .location-marker:focus-visible { outline: 3px solid #111; outline-offset: 3px; }
-.museum-category-art { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(135deg, #6d28d9, #c4b5fd); color: white; }
-.museum-category-art svg { width: 100px; height: 100px; }
 .collection-links { padding-left: 1.2rem; }
 .collection-links li { margin-block: .75rem; }
 
@@ -357,12 +355,10 @@ iframe.street-panorama { position: absolute; inset: 0; width: 100%; height: 100%
 .back-button { border-color: #173f3e35; }
 .back-button:hover { background: #8db9aa25; }
 
-/* A little of Zeeland's coastline in the navigation and location stories. */
-.map-topbar > :not(.sea-waves), .detail-topbar > :not(.sea-waves) { position: relative; z-index: 1; }
-.map-topbar > .sea-waves, .detail-topbar > .sea-waves { height: 34px; }
+/* Location story layout. */
 .detail-topbar { isolation: isolate; padding-bottom: 1.6rem; }
 .detail-heading { position: relative; isolation: isolate; overflow: hidden; max-width: none; padding: clamp(1.5rem, 4vw, 3.5rem); margin-bottom: 2rem; border: 1px solid var(--theme-line); border-radius: 1.5rem; background: linear-gradient(135deg, #fffaf0, #e6eddf); }
-.detail-heading > :not(.sea-waves) { position: relative; z-index: 1; }
+.detail-heading > * { position: relative; z-index: 1; }
 .detail-heading h1 { max-width: 18ch; margin: 1.25rem 0 1.5rem; line-height: 1.08; }
 .detail-heading .detail-tags { margin: 1rem 0; }
 .detail-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; max-width: 850px; }
