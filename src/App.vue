@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { fetchGeodata } from './lib/sparql'
+import StreetView from './components/StreetView.vue'
 import LocationDetail from './components/LocationDetail.vue'
-import { createMapPopup } from './lib/mapPopup'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
 
@@ -23,6 +23,7 @@ let loadedPoints = []
 let requestController
 
 const selectedLocation = ref(null)
+const streetLocation = ref(null)
 const categoryImages = ref({})
 
 function openLocation(row) {
@@ -73,7 +74,7 @@ function renderPoints(fit = false) {
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
     L.circleMarker(coordinates, { radius: 7, color: '#fff', weight: 2, fillColor: categories.find(category => category.id === matches[0]).color, fillOpacity: 0.9 })
-      .bindPopup(() => createMapPopup(row, () => openLocation(row)), { maxWidth: 300, minWidth: 220 })
+      .on('click', () => { streetLocation.value = { row, coordinates } })
       .bindTooltip(tooltip).addTo(nextLayer)
   }
   dataLayer?.remove()
@@ -182,13 +183,23 @@ onBeforeUnmount(() => {
       </fieldset>
       <p v-if="!selectedCategories.length" role="status">Vink een categorie aan om locaties op de kaart te zien.</p>
       <p v-else role="status">{{ visibleCount }} locaties zichtbaar</p>
-      <div class="filter-location">
-        <button class="back-button" type="button" :disabled="locating" @click="locate">{{ locating ? 'Locatie bepalen…' : '⌖ Vind mijn locatie' }}</button>
-        <p class="location-note" :class="{ error: locationError }" role="status">{{ status }}</p>
-      </div>
       <form method="dialog" class="filter-apply"><button class="location-button">Toon de kaart ↗</button></form>
     </dialog>
-    <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Zeeland"></div>
+    <div class="map-stage">
+      <div ref="mapElement" class="map" role="region" aria-label="Interactieve kaart van Zeeland"></div>
+      <div class="map-location-control">
+        <p :class="{ 'visually-hidden': !locating && !locationError, error: locationError }" role="status">{{ status }}</p>
+        <button class="map-location-button" type="button" :disabled="locating" :aria-busy="locating" :title="locating ? 'Locatie bepalen…' : 'Vind mijn locatie'" @click="locate">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="7" />
+            <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+            <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+          </svg>
+          <span>{{ locating ? 'Locatie bepalen…' : 'Vind mijn locatie' }}</span>
+        </button>
+      </div>
+    </div>
+    <StreetView v-if="streetLocation" :row="streetLocation.row" :coordinates="streetLocation.coordinates" @close="streetLocation = null" @read-more="openLocation" />
     <LocationDetail v-if="selectedLocation" :row="selectedLocation" :categories="categories" @close="selectedLocation = null" />
   </main>
 </template>

@@ -227,7 +227,13 @@ button:focus-visible, a:focus-visible, .image-carousel:focus-visible { outline: 
 .map-topbar-copy .status { margin-bottom: 0; font-size: .75rem; }
 .map-topbar .location-button { flex-shrink: 0; }
 .filter-count { display: inline-grid; place-items: center; margin-left: .5rem; width: 23px; height: 23px; border-radius: 50%; background: #ffffff25; font-size: .75rem; }
-.map-experience > .map { flex: 1 1 0; height: auto; min-height: 0; border-radius: 0; box-shadow: none; }
+.map-stage { position: relative; flex: 1 1 0; min-height: 0; isolation: isolate; }
+.map-stage > .map { position: absolute; inset: 0; height: 100%; min-height: 0; border-radius: 0; box-shadow: none; }
+.map-location-control { position: absolute; z-index: 500; right: max(1rem, env(safe-area-inset-right)); bottom: calc(2.5rem + env(safe-area-inset-bottom)); display: flex; align-items: flex-end; flex-direction: column; gap: .5rem; max-width: calc(100% - 2rem); pointer-events: none; }
+.map-location-button { display: flex; align-items: center; gap: .6rem; min-height: 48px; padding: .75rem 1rem; border: 1px solid #203b3420; border-radius: 999px; background: #fff; color: #203f34; box-shadow: 0 3px 14px #0003; font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; pointer-events: auto; }
+.map-location-button:hover { background: #f0f4ef; }
+.map-location-button:disabled { opacity: .75; cursor: wait; }
+.map-location-control > p:not(.visually-hidden) { max-width: 320px; padding: .65rem .9rem; border-radius: .6rem; background: #fff; box-shadow: 0 3px 14px #0002; font-size: .8rem; pointer-events: auto; }
 .map-topbar-copy { min-width: 0; }
 .map-topbar.page-header {
   padding-top: max(1.2rem, env(safe-area-inset-top));
@@ -269,4 +275,66 @@ button:focus-visible, a:focus-visible, .image-carousel:focus-visible { outline: 
 .map-filter-dialog .filter-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 650px) {
   .map-filter-dialog .filter-card-grid { grid-template-columns: 1fr; }
+}
+
+/* Google Street View embed and the app's overlay controls. */
+.street-view-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #18231f;
+  color: #fff;
+}
+.street-view-stage { position: relative; width: 100%; height: 100%; overflow: hidden; }
+iframe.street-panorama { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.street-view-message {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: 14rem 1.5rem 2rem;
+  text-align: center;
+  pointer-events: none;
+}
+.street-view-message > div {
+  max-width: 440px;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: #18231fee;
+  pointer-events: auto;
+}
+.street-view-message button { margin-top: 1rem; }
+.street-view-close {
+  position: absolute;
+  z-index: 3;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  padding: .8rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #203b34;
+  font: inherit;
+  cursor: pointer;
+}
+.street-view-bubble {
+  position: absolute;
+  z-index: 2;
+  top: calc(5rem + env(safe-area-inset-top));
+  left: max(1rem, env(safe-area-inset-left));
+  max-width: min(300px, calc(100% - 2rem));
+  max-height: 35%;
+  overflow-y: auto;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #fff9ef;
+  box-shadow: 0 5px 30px #0005;
 }
