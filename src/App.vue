@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { fetchGeodata } from './lib/sparql'
+import { fetchGeodata, parsePoint } from './lib/sparql'
 import StreetView from './components/StreetView.vue'
 import LocationDetail from './components/LocationDetail.vue'
 import { imageUrls, thumbnail } from './lib/images'
@@ -28,6 +28,12 @@ const categoryImages = ref({})
 
 function openLocation(row) {
   selectedLocation.value = row
+}
+
+function returnToStreetView(row) {
+  const coordinates = parsePoint(row)
+  if (coordinates) streetLocation.value = { row, coordinates }
+  selectedLocation.value = null
 }
 
 async function fetchPoints() {
@@ -200,6 +206,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
     <StreetView v-if="streetLocation" :row="streetLocation.row" :coordinates="streetLocation.coordinates" @close="streetLocation = null" @read-more="openLocation" />
-    <LocationDetail v-if="selectedLocation" :row="selectedLocation" :categories="categories" @close="selectedLocation = null" />
+    <LocationDetail v-if="selectedLocation" :row="selectedLocation" :categories="categories" @close="selectedLocation = null" @street-view="returnToStreetView" />
   </main>
 </template>
