@@ -58,3 +58,27 @@ test('prefers RCE descriptions and falls back to Wikidata for absent or blank RC
   assert.deepEqual(preferredDescription(row), { text: 'Wikidata-omschrijving', source: 'Wikidata' })
   assert.equal(preferredDescription({}), null)
 })
+
+test('retries a temporary RCE 503 and then returns the live description', async t => {
+  let calls = 0
+  const row = { rijksmonumentnummer: literal('991001') }
+  const record = { rijksmonumentnummer: literal('991001'), omschrijving: literal('Herstelde bron') }
+  t.mock.method(globalThis, 'fetch', async () => ++calls === 1
+    ? { ok: false, status: 503 }
+    : { ok: true, json: async () => ({ results: { bindings: [record] } }) })
+  t.mock.timers.enable({ apis: ['setTimeout'] })
+  const result = fetchHeritage(row)
+  for (let i = 0; i < 10; i++) await Promise.resolve()
+  t.mock.timers.tick(1000)
+  assert.deepEqual(await result, [record])
+  assert.equal(calls, 2)
+})
+
+test('propagates unavailable RCE data and respects cancellation', async t => {
+  t.mock.method(globalThis, 'fetch', async () => { throw new TypeError('Failed to fetch') })
+  const row = { rijksmonumentnummer: literal('991003') }
+  await assert.rejects(fetchHeritage(row), /Failed to fetch/)
+  const controller = new AbortController()
+  controller.abort()
+  await assert.rejects(fetchHeritage(row, { signal: controller.signal }), { name: 'AbortError' })
+})

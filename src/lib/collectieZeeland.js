@@ -2,8 +2,7 @@ import dataset from '../data/collectie-zeeland.json' with { type: 'json' }
 
 const value = value => ({ value })
 
-// The catalog's objects have no coordinates. Plot their participating museums
-// at verified BAG addresses, with source-provided links to collection objects.
+// participating museums plotted at verified BAG addresses, with source-provided links to collection objects.
 export function collectieZeelandPoints(data = dataset) {
   return data.locations.filter(location =>
     Array.isArray(location.coordinates) && location.coordinates.length === 2 &&

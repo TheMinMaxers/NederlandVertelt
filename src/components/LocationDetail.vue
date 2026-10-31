@@ -92,7 +92,7 @@ onBeforeUnmount(() => heritageController.abort())
         <p v-if="description" class="heritage-description">{{ description.text }}</p>
         <p v-else-if="!heritageLoading">Er is nog geen omschrijving beschikbaar voor deze locatie.</p>
         <p v-if="heritageLoading" role="status">Erfgoedgegevens laden…</p>
-        <div v-else-if="heritageError" role="status"><p>De erfgoedgegevens konden niet worden geladen.</p><button class="location-button" type="button" @click="loadHeritage">Opnieuw proberen</button></div>
+        <div v-if="heritageError" role="status"><p>{{ description ? 'De aanvullende RCE-gegevens zijn tijdelijk niet beschikbaar. Je ziet de beschrijving uit Wikidata.' : 'De RCE-bron is tijdelijk niet bereikbaar. Probeer het later opnieuw of bekijk het monument bij de bron.' }}</p><button class="location-button" type="button" @click="loadHeritage">Opnieuw proberen</button> <a v-for="number in monumentNumbers(row)" :key="number" :href="`https://monumentenregister.cultureelerfgoed.nl/monumenten/${number}`" target="_blank" rel="noopener noreferrer">Monument {{ number }} bij RCE ↗</a></div>
         <article v-for="record in heritage" :key="record.rijksmonumentnummer.value" class="heritage-record">
           <dl class="heritage-facts">
             <div><dt>Rijksmonument</dt><dd><a :href="`https://monumentenregister.cultureelerfgoed.nl/monumenten/${record.rijksmonumentnummer.value}`" target="_blank" rel="noopener noreferrer">{{ record.rijksmonumentnummer.value }} ↗</a></dd></div>
