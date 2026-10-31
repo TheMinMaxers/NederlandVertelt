@@ -11,7 +11,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?item ?itemLabel ?coord ?town ?townLabel
        (GROUP_CONCAT(DISTINCT ?classLabel; separator=", ") AS ?className)
        (MIN(?inceptionDate) AS ?inception)
-       (MIN(?openingDate) AS ?officialOpening)
        (COALESCE(SAMPLE(?descriptionNl), SAMPLE(?descriptionEn)) AS ?itemDescription)
        (GROUP_CONCAT(DISTINCT STR(?itemImage); separator="|") AS ?images)
        (GROUP_CONCAT(DISTINCT STR(?monumentNumber); separator="|") AS ?rijksmonumentnummer)
@@ -38,7 +37,7 @@ SELECT ?item ?itemLabel ?coord ?town ?townLabel
   OPTIONAL { ?item wdt:P18 ?itemImage . }
   OPTIONAL { ?item wdt:P359 ?monumentNumber . }
   OPTIONAL { ?item wdt:P571 ?inceptionDate . }
-  OPTIONAL { ?item wdt:P1619 ?openingDate . }
+  
   OPTIONAL { ?item schema:description ?descriptionNl . FILTER(LANG(?descriptionNl) = "nl") }
   OPTIONAL { ?item schema:description ?descriptionEn . FILTER(LANG(?descriptionEn) = "en") }
   OPTIONAL {
