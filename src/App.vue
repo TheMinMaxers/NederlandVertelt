@@ -91,6 +91,11 @@ function renderPoints(fit = false) {
   points.forEach(({ coordinates, row, category }, index) => {
     const layout = positions[index]
     const displayedCoordinates = map.layerPointToLatLng([layout.x, layout.y])
+    if (layout.moved) {
+      L.polyline([coordinates, displayedCoordinates], {
+        color: category.color, weight: 1.5, opacity: 0.5, interactive: false,
+      }).addTo(nextLayer)
+    }
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
     L.marker(displayedCoordinates, {
