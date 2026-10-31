@@ -1,6 +1,7 @@
 <script setup>
+import SeaWaves from './SeaWaves.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { constructionYear } from '../lib/mapPopup'
+import { locationYear } from '../lib/mapPopup'
 import { imageSource, imageUrls, safeUrl, thumbnail } from '../lib/images'
 import { fetchHeritage, formatRegistrationDate, monumentNumbers, preferredDescription } from '../lib/heritage'
 const props = defineProps({ row: { type: Object, required: true }, categories: { type: Array, required: true } })
@@ -13,6 +14,7 @@ const heritage = ref([])
 const heritageLoading = ref(false)
 const heritageError = ref(false)
 const heritageController = new AbortController()
+const date = computed(() => locationYear(props.row, heritage.value))
 const description = computed(() => preferredDescription(props.row, heritage.value))
 async function loadHeritage() {
   heritageLoading.value = true
@@ -58,17 +60,20 @@ onBeforeUnmount(() => heritageController.abort())
         <button class="back-button" type="button" @click="returnToStreetView">← Terug naar Street View</button>
         <button class="back-button" type="button" autofocus @click="dialog.close()">← Terug naar de kaart <span aria-hidden="true">×</span></button>
       </nav>
+      <SeaWaves />
     </header>
     <article class="detail-content">
       <div class="detail-heading">
         <p class="eyebrow">ZEELAND · EEN PLEK OM TE ONTDEKKEN</p>
         <div class="detail-tags"><span v-for="category in labels" :key="category.id" class="tag">{{ category.label }}</span></div>
         <h1 id="detail-title"><a v-if="safeUrl(row.item?.value)" :href="safeUrl(row.item.value)" target="_blank" rel="noopener noreferrer">{{ name }} <span class="external-arrow">↗</span></a><template v-else>{{ name }}</template></h1>
+        <div class="detail-summary">
         <p v-if="row.className?.value" class="detail-town">{{ row.source?.value ? 'Type locatie' : 'Type bouwwerk' }}: {{ row.className.value }}</p>
-        <p v-if="constructionYear(row.inception?.value)" class="detail-town">Gebouwd in {{ constructionYear(row.inception.value) }} · Bron: Wikidata</p>
+        <p v-if="date" class="detail-town">{{ date.label }} {{ date.year }} · Bron: {{ date.source }}</p>
         <p v-if="row.aliasesNl?.value" class="detail-aliases">Ook bekend als: {{ row.aliasesNl.value }}</p>
         <p v-if="row.townLabel?.value || row.town?.value" class="detail-town">Stad: <a v-if="safeUrl(row.town?.value)" :href="safeUrl(row.town.value)" target="_blank" rel="noopener noreferrer">{{ row.townLabel?.value || row.town.value }} ↗</a><span v-else>{{ row.townLabel.value }}</span></p>
         <p v-if="row.address?.value" class="detail-town">Adres: {{ row.address.value }} <a v-if="safeUrl(row.addressSource?.value)" :href="safeUrl(row.addressSource.value)" target="_blank" rel="noopener noreferrer">Bron: BAG ↗</a></p>
+        </div>
       </div>
       <section v-if="!row.source?.value || images.length" class="gallery" aria-label="Foto’s van de locatie">
         <div v-if="images.length" ref="carousel" class="image-carousel" tabindex="0" aria-label="Fotocarrousel, gebruik de pijltjestoetsen om te scrollen" @scroll.passive="updateSlide" @keydown.left.prevent="move(-1)" @keydown.right.prevent="move(1)">
