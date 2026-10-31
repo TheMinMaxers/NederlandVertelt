@@ -4,12 +4,15 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { fetchGeodata, parsePoint } from './lib/sparql'
 import StreetView from './components/StreetView.vue'
+import WelcomeIntro from './components/WelcomeIntro.vue'
+import SeaWaves from './components/SeaWaves.vue'
 import LocationDetail from './components/LocationDetail.vue'
 import { imageUrls, thumbnail } from './lib/images'
 import { geodataEndpoint, geodataQuery } from './lib/geodata'
 import { collectieZeelandPoints } from './lib/collectieZeeland'
 import { categoryIcons, markerSize, spreadMarkers } from './lib/mapMarkers'
 
+const showIntro = ref(true)
 const loading = ref(false)
 const queryStatus = ref('Geodata laden…')
 const queryError = ref(false)
@@ -88,10 +91,6 @@ function renderPoints(fit = false) {
   points.forEach(({ coordinates, row, category }, index) => {
     const layout = positions[index]
     const displayedCoordinates = map.layerPointToLatLng([layout.x, layout.y])
-    if (layout.moved) {
-      L.polyline([coordinates, displayedCoordinates], { color: category.color, weight: 2, opacity: 0.5, interactive: false }).addTo(nextLayer)
-      L.circleMarker(coordinates, { radius: 3, color: '#fff', weight: 1, fillColor: category.color, fillOpacity: 1, interactive: false }).addTo(nextLayer)
-    }
     const tooltip = document.createElement('span')
     tooltip.textContent = row.itemLabel?.value || 'Locatie'
     L.marker(displayedCoordinates, {
@@ -183,6 +182,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <WelcomeIntro v-if="showIntro" @enter="showIntro = false" />
   <main class="map-page map-experience">
     <header class="page-header map-topbar">
       <div class="map-topbar-copy">
@@ -191,6 +191,7 @@ onBeforeUnmount(() => {
         <p v-if="loading || queryError" class="status" :class="{ error: queryError }" role="status">{{ queryStatus }} <button v-if="queryError" class="intro-read-more" type="button" @click="fetchPoints">Opnieuw laden</button></p>
       </div>
       <button class="location-button" type="button" aria-haspopup="dialog" @click="filterDialog.showModal()">☷ Filters <span class="filter-count">{{ selectedCategories.length }}</span></button>
+      <SeaWaves />
     </header>
     <dialog ref="filterDialog" class="filter-dialog map-filter-dialog" aria-labelledby="filter-title" @click="event => { if (event.target === filterDialog) filterDialog.close() }">
       <div class="filter-dialog-heading">
