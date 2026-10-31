@@ -4,7 +4,7 @@ import { constructionYear } from '../lib/mapPopup'
 import { imageSource, imageUrls, safeUrl, thumbnail } from '../lib/images'
 import { fetchHeritage, formatRegistrationDate, monumentNumbers, preferredDescription } from '../lib/heritage'
 const props = defineProps({ row: { type: Object, required: true }, categories: { type: Array, required: true } })
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'street-view'])
 const dialog = ref(null)
 const carousel = ref(null)
 const active = ref(0)
@@ -31,6 +31,10 @@ async function loadHeritage() {
 const images = computed(() => imageUrls(props.row).filter(url => !failed.value.includes(url)))
 const labels = computed(() => props.categories.filter(category => (props.row.categories?.value || '').split(',').includes(category.id)))
 const name = computed(() => props.row.itemLabel?.value || 'Onbekende locatie')
+function returnToStreetView() {
+  dialog.value.close()
+  emit('street-view', props.row)
+}
 function move(direction) {
   const element = carousel.value
   if (element) element.scrollBy({ left: direction * element.clientWidth, behavior: 'smooth' })
@@ -50,7 +54,10 @@ onBeforeUnmount(() => heritageController.abort())
   <dialog ref="dialog" class="detail-dialog" aria-labelledby="detail-title" @close="emit('close')">
     <header class="detail-topbar">
       <span class="brand">Nederland<span>Vertelt.</span></span>
-      <button class="back-button" type="button" autofocus @click="dialog.close()">← Terug naar de kaart <span aria-hidden="true">×</span></button>
+      <nav class="detail-back-actions" aria-label="Terug naar kaart of straatbeeld">
+        <button class="back-button" type="button" @click="returnToStreetView">← Terug naar Street View</button>
+        <button class="back-button" type="button" autofocus @click="dialog.close()">← Terug naar de kaart <span aria-hidden="true">×</span></button>
+      </nav>
     </header>
     <article class="detail-content">
       <div class="detail-heading">

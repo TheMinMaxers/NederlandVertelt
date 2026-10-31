@@ -8,3 +8,15 @@ export function streetViewEmbedUrl(coordinates, apiKey) {
   url.searchParams.set('language', 'nl')
   return url.href
 }
+
+export function walkingNavigationUrl(coordinates) {
+  if (!Array.isArray(coordinates) || coordinates.length !== 2) return null
+  const [lat, lon] = coordinates
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null
+  const url = new URL('https://www.google.com/maps/dir/')
+  url.searchParams.set('api', '1')
+  url.searchParams.set('destination', `${lat},${lon}`)
+  url.searchParams.set('travelmode', 'walking')
+  url.searchParams.set('dir_action', 'navigate')
+  return url.href
+}

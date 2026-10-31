@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { streetViewEmbedUrl } from '../lib/streetView'
+import { streetViewEmbedUrl, walkingNavigationUrl } from '../lib/streetView'
 import { createMapPopup } from '../lib/mapPopup'
 const props = defineProps({ row: { type: Object, required: true }, coordinates: { type: Array, required: true } })
 const emit = defineEmits(['close', 'read-more'])
@@ -8,6 +8,7 @@ const dialog = ref(null)
 const bubble = ref(null)
 const frameError = ref(false)
 const src = computed(() => streetViewEmbedUrl(props.coordinates, import.meta.env.VITE_GOOGLE_MAPS_EMBED_API_KEY))
+const navigationUrl = computed(() => walkingNavigationUrl(props.coordinates))
 function readMore() { dialog.value.close(); emit('read-more', props.row) }
 onMounted(() => {
   dialog.value.showModal()
@@ -27,7 +28,10 @@ onMounted(() => {
         </div>
       </div>
       <button class="street-view-close" type="button" autofocus @click="dialog.close()">← Terug naar de kaart ×</button>
-      <div ref="bubble" class="street-view-bubble"></div>
+      <div class="street-view-bubble">
+        <div ref="bubble"></div>
+        <a v-if="navigationUrl" class="location-button street-navigation" :href="navigationUrl" target="_blank" rel="noopener noreferrer" aria-label="Start wandelnavigatie in Google Maps (opent buiten deze app)">Start navigatie ↗</a>
+      </div>
     </div>
   </dialog>
 </template>
