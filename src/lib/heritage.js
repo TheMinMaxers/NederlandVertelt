@@ -1,7 +1,6 @@
 import { querySparql } from './sparql.js'
 
 export const heritageEndpoint = 'https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/services/cho/sparql'
-const cache = new Map()
 
 export function preferredDescription(row, records = []) {
   const descriptions = [...new Set(records.map(record => record.omschrijving?.value?.trim()).filter(Boolean))]
@@ -50,15 +49,28 @@ export function joinHeritage(row, bindings) {
     Boolean(binding.omschrijving?.value?.trim()))
 }
 
+function pause(signal) {
+  return new Promise((resolve, reject) => {
+    const abort = () => { clearTimeout(timer); reject(new DOMException('Aborted', 'AbortError')) }
+    const timer = setTimeout(() => { signal?.removeEventListener('abort', abort); resolve() }, 1000)
+    if (signal?.aborted) abort()
+    else signal?.addEventListener('abort', abort, { once: true })
+  })
+}
+
 export async function fetchHeritage(row, { signal } = {}) {
   const numbers = monumentNumbers(row)
   if (!numbers.length) return []
-  const key = [...numbers].sort().join('|')
-  if (cache.has(key)) return cache.get(key)
-  const data = await querySparql({ endpoint: heritageEndpoint, query: heritageQuery(numbers), signal, timeoutMs: 30000 })
-  const matches = joinHeritage(row, data.results.bindings)
-  cache.set(key, matches)
-  return matches
+  if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const data = await querySparql({ endpoint: heritageEndpoint, query: heritageQuery(numbers), signal, timeoutMs: 15000 })
+      return joinHeritage(row, data.results.bindings)
+    } catch (error) {
+      if (signal?.aborted || attempt || ![429, 502, 503, 504].includes(error.status)) throw error
+      await pause(signal)
+    }
+  }
 }
 
 export function formatRegistrationDate(value) {
